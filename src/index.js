@@ -87,7 +87,17 @@ class GameControl extends React.Component {
         <p>Current turn: {player.displayName}</p>
         <button disabled>Make {player.displayName} turn back after moving</button>
         <br/>
-        <button>Roll the dice for {player.displayName}</button>
+        <button onClick={this.props.rollDiceCallback}>Roll the dice for {player.displayName}</button>
+      </div>
+    );
+  }
+
+  renderRolled() {
+    let player = this.props.currentPlayer;
+    return (
+      <div>
+        <h2>Playing the game!</h2>
+        <p>{player.displayName} rolled a {this.props.rolled}</p>
       </div>
     );
   }
@@ -100,6 +110,10 @@ class GameControl extends React.Component {
     if (this.props.gameState === "playing") {
       return this.renderPlaying();
     }
+
+    if (this.props.gameState == "rolled") {
+      return this.renderRolled();
+    }
   }
 }
 
@@ -111,6 +125,7 @@ class Game extends React.Component {
       players: [],
       gameState: "pregame",
       currentPlayerId: null,
+      rolled: null
     };
   }
 
@@ -139,6 +154,8 @@ class Game extends React.Component {
           addPlayerCallBack={this.handleAddPlayer.bind(this)}
           startGameCallBack={this.handleStartGame.bind(this)}
           currentPlayer={this.state.players[this.state.currentPlayerId]}
+          rollDiceCallback={this.rollDice.bind(this)}
+          rolled={this.state.rolled}
         />
         <Players players={this.state.players} />
       </div>
@@ -161,16 +178,13 @@ class Game extends React.Component {
     return chips;
   }
 
-  getCurrentPlayer() {
-  }
-
   handleAddPlayer(name) {
     this.setState({
       players: this.state.players.concat([
         {
           index: this.state.players.length,
           name: name,
-          displayName: name + " (" + this.state.players.length + ")",
+          displayName: name + " (" + (this.state.players.length + 1) + ")",
           position: null,
           rolled: null
         },
@@ -178,7 +192,7 @@ class Game extends React.Component {
     });
   }
 
-  rollDice(player) {
+  rollDice() {
     const faces = [1, 1, 2, 2, 3, 3]
 
     let dice1 = faces[Math.floor(Math.random() * faces.length)];
@@ -186,12 +200,9 @@ class Game extends React.Component {
 
     let rolled = dice1 + dice2;
 
-    let players = this.state.players.slice();
-    players[this.state.currentPlayer.index].rolled = rolled;
-
     this.setState({
       gameState: "rolled",
-      players: players
+      rolled: rolled
     });
   }
 
