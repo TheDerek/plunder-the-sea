@@ -1,11 +1,45 @@
-/** {
+*,html,body {
     margin: 0;
     padding: 0;
-}*/
+}
+
+body {
+    font-family: Sans-Serif;
+}
 
 .chip {
     display: inline-block;
-    padding: 5px;
     margin: 5px;
     border: 1px black solid;
+    border-radius: 5px;
+    min-width: 8em;
+}
+
+.chip-level {
+    border-bottom: solid black 1px;
+    padding: 3px;
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+
+.chip-player {
+    min-height: 1.2em;
+    text-align: center;
+}
+
+.chip-status {
+    margin-top: 0.5em;
+    border-top: solid black 1px;
+    padding: 3px;
+    text-align: center;
+}
+
+.chip-status-unplundered {
+    background-color: #668014;
+    color: white;
+}
+
+.chip-status-plundered {
+    background-color: #CDC9C9;
+    color: black;
 }
