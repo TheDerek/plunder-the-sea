@@ -12,7 +12,7 @@ body {
     margin: 5px;
     border: 1px black solid;
     border-radius: 5px;
-    min-width: 8em;
+    min-width: 9em;
 }
 
 .chip-level {
@@ -20,6 +20,26 @@ body {
     padding: 3px;
     text-align: center;
     margin-bottom: 0.5em;
+}
+
+.chip-level-1 {
+    background-color: #bbbdf6;
+    color: black;
+}
+
+.chip-level-2 {
+    background-color: #a8aee2;
+    color: white;
+}
+
+.chip-level-3 {
+    background-color: #9797ce;
+    color: white;
+}
+
+.chip-level-4 {
+    background-color: #8384B9;
+    color: white;
 }
 
 .chip-player {
@@ -35,11 +55,11 @@ body {
 }
 
 .chip-status-unplundered {
-    background-color: #668014;
+    background-color: #72727E;
     color: white;
 }
 
 .chip-status-plundered {
-    background-color: #CDC9C9;
-    color: black;
+    background-color: #625F63;
+    color: white;
 }

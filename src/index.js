@@ -23,9 +23,11 @@ function Chip(props) {
         levelText += "•";
     }
 
+    let levelClass = "chip-level chip-level-" + props.level;
+
     return (
         <div className="chip">
-            <div className="chip-level">
+            <div className={levelClass}>
                 {levelText}
             </div>
             {playerElement}
