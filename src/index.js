@@ -6,7 +6,7 @@ function Chip(props) {
     let playerElement = null;
     if (props.player) {
         playerElement = (
-            <div className="chip-player">{props.player.displayName}</div>
+            <div className="chip-player">{getName(props.player)}</div>
         )
     } else {
         playerElement = (
@@ -101,15 +101,25 @@ function PlayerPlunder(props) {
     );
 }
 
+function getName(player) {
+    if (player.hasTurnedBack) {
+        return "(←) " + player.name;
+    } else {
+        return player.name + " →";
+    }
+}
+
 function Player(props) {
     let playerClass = "player"
     if (props.player.isCurrentTurn) {
         playerClass += " player-current"
     }
 
+    let playerName = props.player.name;
+
     return (
         <div className={playerClass}>
-            <div className="player-name">{props.player.name}</div>
+            <div className="player-name">{props.player.name} →</div>
             <PlayerPlunder plunder={props.player.plunder}/>
         </div>
     );
@@ -147,10 +157,10 @@ class GameControl extends React.Component {
         return (
             <div>
                 <h2>Playing the game!</h2>
-                <p>Current turn: {player.displayName}</p>
-                <button disabled>Make {player.displayName} turn back after moving</button>
+                <p>Current turn: {player.name}</p>
+                <button disabled>Make {player.name} turn back after moving</button>
                 <br/>
-                <button onClick={this.props.rollDiceCallback}>Roll the dice for {player.displayName}</button>
+                <button onClick={this.props.rollDiceCallback}>Roll the dice for {player.name}</button>
             </div>
         );
     }
@@ -160,8 +170,8 @@ class GameControl extends React.Component {
         return (
             <div>
                 <h2>Playing the game!</h2>
-                <p>{player.displayName} rolled a {this.props.rolled}</p>
-                <button onClick={this.props.movePlayer}>Move {player.displayName} {this.props.rolled} spaces.</button>
+                <p>{player.name} rolled a {this.props.rolled}</p>
+                <button onClick={this.props.movePlayer}>Move {player.name} {this.props.rolled} spaces.</button>
             </div>
         );
     }
@@ -172,7 +182,7 @@ class GameControl extends React.Component {
 
         return (
             <div>
-                <p>{player.displayName} has moved to chip {player.position + 1} !</p>
+                <p>{getName(player)} has moved to chip {player.position + 1} !</p>
                 <button
                     disabled={this.props.currentChip.plundered}
                     onClick={this.props.plunder}
@@ -299,11 +309,11 @@ class Game extends React.Component {
                 {
                     index: this.state.players.length,
                     name: name,
-                    displayName: name + " (" + (this.state.players.length + 1) + ")",
+                    displayName: name,
                     position: -1, // On the sub
                     isCurrentTurn: false,
                     plunder: [],
-                    turnedBack: false
+                    hasTurnedBack: false
                 },
             ]),
         });
