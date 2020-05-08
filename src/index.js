@@ -79,18 +79,30 @@ class AddPlayerForm extends React.Component {
 }
 
 function Player(props) {
-    return <li>{props.name}</li>;
+    let playerClass = "player"
+    if (props.player.isCurrentTurn()) {
+        playerClass += " player-current"
+    }
+
+    return (
+        <div className={playerClass}>
+            <div className="player-name">{props.player.name}</div>
+            <div className="player-items">
+
+            </div>
+        </div>
+    );
 }
 
 function Players(props) {
     let players = props.players;
     let playerItems = players.map((player, index) =>
-        React.createElement(Player, {key: index, name: player.name})
+        React.createElement(Player, {key: index, player: player})
     );
     return (
         <div>
             <h2>Players</h2>
-            <ol>{playerItems}</ol>
+            <div>{playerItems}</div>
         </div>
     );
 }
@@ -218,7 +230,13 @@ class Game extends React.Component {
 
         return (
             <div>
-                <div>{chipsElements}</div>
+                <header>
+                    <h1>Deep Sea Adventure</h1>
+                    <p>Unofficial web implementation by <a href="https://github.com/TheDerek">TheDerek</a></p>
+                    <p>Original game by <a href="https://oinkgames.com">Oink Games</a></p>
+                    <p>Best played with friends in the same room or via your favourite streaming software</p>
+                </header>
+                <div className="chips">{chipsElements}</div>
                 <hr/>
                 <GameControl
                     gameState={this.state.gameState}
@@ -262,6 +280,7 @@ class Game extends React.Component {
                     name: name,
                     displayName: name + " (" + (this.state.players.length + 1) + ")",
                     position: -1, // On the sub
+                    isCurrentTurn: () => this.state.currentPlayerId === this.state.players.length,
                     plunder: {
                         1: 0,
                         2: 0,

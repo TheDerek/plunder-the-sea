@@ -7,6 +7,16 @@ body {
     font-family: Sans-Serif;
 }
 
+header {
+    text-align: center;
+    margin: 1em;
+    font-size: small;
+}
+
+.chips {
+    text-align: center;
+}
+
 .chip {
     display: inline-block;
     margin: 5px;
@@ -43,7 +53,7 @@ body {
 }
 
 .chip-player {
-    min-height: 1.2em;
+    min-height: 1.3em;
     text-align: center;
 }
 
@@ -62,4 +72,27 @@ body {
 .chip-status-plundered {
     background-color: #625F63;
     color: white;
+}
+
+.player {
+    border: solid 1px black;
+    display: inline-block;
+    margin: 10px;
+    border-radius: 3px;
+}
+
+.player-current {
+    border-width: 3px;
+}
+
+.player-name {
+    border-right: solid 1px black;
+    float: left;
+    padding: 5px;
+}
+
+.player-items {
+    min-width: 5em;
+    float: left;
+    padding: 5px;
 }
