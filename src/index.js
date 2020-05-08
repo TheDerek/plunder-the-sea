@@ -78,18 +78,39 @@ class AddPlayerForm extends React.Component {
     }
 }
 
+function Plunder(props) {
+    let plunderText = "";
+    for (let i = 0; i < props.level; i++) {
+        plunderText += "•";
+    }
+
+    let className = "plunder chip-level-" + props.level;
+
+    return (
+        <div className={className}>{plunderText}</div>
+    )
+}
+
+function PlayerPlunder(props) {
+    let plunderItems = props.plunder.map((item) => React.createElement(Plunder, {level: item}))
+
+    return (
+        <div className="player-items">
+            {plunderItems}
+        </div>
+    );
+}
+
 function Player(props) {
     let playerClass = "player"
-    if (props.player.isCurrentTurn()) {
+    if (props.player.isCurrentTurn) {
         playerClass += " player-current"
     }
 
     return (
         <div className={playerClass}>
             <div className="player-name">{props.player.name}</div>
-            <div className="player-items">
-
-            </div>
+            <PlayerPlunder plunder={props.player.plunder}/>
         </div>
     );
 }
@@ -101,8 +122,8 @@ function Players(props) {
     );
     return (
         <div>
-            <h2>Players</h2>
-            <div>{playerItems}</div>
+            <h2 className="players-title">Players</h2>
+            <div className="players">{playerItems}</div>
         </div>
     );
 }
@@ -280,13 +301,9 @@ class Game extends React.Component {
                     name: name,
                     displayName: name + " (" + (this.state.players.length + 1) + ")",
                     position: -1, // On the sub
-                    isCurrentTurn: () => this.state.currentPlayerId === this.state.players.length,
-                    plunder: {
-                        1: 0,
-                        2: 0,
-                        3: 0,
-                        4: 0
-                    }
+                    isCurrentTurn: false,
+                    plunder: [],
+                    turnedBack: false
                 },
             ]),
         });
@@ -342,9 +359,15 @@ class Game extends React.Component {
     }
 
     handleStartGame() {
+        // Randomly choose the first player
+        let nextPlayerId = Math.floor(Math.random() * this.state.players.length)
+
+        let players = this.state.players.slice();
+        players[nextPlayerId].isCurrentTurn = true;
+
         this.setState({
             gameState: "playing",
-            currentPlayerId: 0
+            currentPlayerId: nextPlayerId
         });
     }
 
@@ -356,7 +379,7 @@ class Game extends React.Component {
         let chip = chips[player.position];
 
         chip.plundered = true;
-        player.plunder[chip.level] += 1;
+        player.plunder.push(chip.level);
 
         this.setState({
             chips: chips,
@@ -371,6 +394,10 @@ class Game extends React.Component {
         } else {
             nextPlayerId = this.state.currentPlayerId + 1;
         }
+
+        let players = this.state.players.slice();
+        players[this.state.currentPlayerId].isCurrentTurn = false;
+        players[nextPlayerId].isCurrentTurn = true;
 
         this.setState({
             gameState: "playing",
