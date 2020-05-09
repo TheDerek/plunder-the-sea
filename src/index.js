@@ -131,9 +131,11 @@ function Players(props) {
         React.createElement(Player, {key: index, player: player})
     );
     return (
-        <div>
-            <h2 className="players-title">Players</h2>
-            <div className="players">{playerItems}</div>
+        <div className="players">
+            <div className="players-container">
+                <h2 className="players-title">Players</h2>
+                <div class="players-boxes">{playerItems}</div>
+            </div>
         </div>
     );
 }
@@ -195,24 +197,28 @@ class GameControl extends React.Component {
     }
 
     render() {
+        let stateRender = <p>Error: State not specified</p>;
+
         if (this.props.gameState === "pregame") {
-            return this.renderAddPlayers();
+            stateRender = this.renderAddPlayers();
         }
 
         if (this.props.gameState === "playing") {
-            return this.renderPlaying();
+            stateRender = this.renderPlaying();
         }
 
         if (this.props.gameState === "rolled") {
-            return this.renderRolled();
+            stateRender = this.renderRolled();
         }
 
         if (this.props.gameState === "moved") {
-            return this.renderMoved();
+            stateRender = this.renderMoved();
         }
 
         return (
-            <p>State {this.props.gameState} has not been added yet</p>
+            <div className="game-control">
+                {stateRender}
+            </div>
         );
     }
 }
@@ -268,7 +274,6 @@ class Game extends React.Component {
                     <p>Best played with friends in the same room or via your favourite streaming software</p>
                 </header>
                 <div className="chips">{chipsElements}</div>
-                <hr/>
                 <GameControl
                     gameState={this.state.gameState}
                     addPlayerCallBack={this.handleAddPlayer.bind(this)}
