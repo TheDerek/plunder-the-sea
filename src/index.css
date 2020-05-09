@@ -138,7 +138,7 @@ header {
 
 .game-control h2 {
     border-bottom: 1px solid black;
-    margin: 30px 0 20px 0px;
+    margin: 30px 0 10px 0px;
     padding-bottom: 5px;
     text-align: left;
 }
@@ -148,4 +148,67 @@ header {
     margin: 30px 0 10px 0px;
     padding-bottom: 5px;
     text-align: right;
+}
+
+.add-player-form-container {
+    border: 1px black solid;
+    border-radius: 3px;
+}
+
+.add-player-form-container p {
+    border-bottom: 1px black solid;
+    text-align: center;
+    padding: 10px;
+    color: white;
+    background-color: #72727E;
+}
+
+.add-player-form-container form {
+    padding: 10px;
+}
+
+.add-player-form-container form label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.add-player-form-container form input[type=text] {
+    display: block;
+    width: 100%;
+}
+
+.add-player-form-container form input[type=submit] {
+    margin-top: 10px;
+    display: block;
+    width: 100%;
+    padding: 3px;
+}
+
+.start-game-button {
+    margin-top: 15px;
+    padding: 5px;
+    width: 100%;
+}
+
+.stat {
+    display: inline-block;
+    border: 1px black solid;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 5px;
+}
+
+.stat div {
+    padding: 10px;
+}
+
+.stat-title {
+    display: inline-block;
+    border-right: 1px black solid;
+    background-color: #72727E;
+    color: white;
+}
+
+.stat-value {
+    display: inline-block;
 }

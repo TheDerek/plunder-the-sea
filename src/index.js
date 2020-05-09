@@ -60,18 +60,18 @@ class AddPlayerForm extends React.Component {
 
     render() {
         return (
-            <div>
-                <h2>Add player</h2>
+            <div className="add-player-form-container">
+                <p>Add player</p>
                 <form onSubmit={this.handleSubmit}>
-                    <label>
-                        Name:
-                        <input
-                            type="text"
-                            value={this.state.value}
-                            onChange={this.handleChange}
-                        />
-                    </label>
-                    <input type="submit" value="Submit"/>
+                    <label>Player name</label>
+                    <input
+                        type="text"
+                        required="required"
+                        placeholder='Johnathon "JoJo" Joestar'
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                    />
+                    <input type="submit" value="Add player to game"/>
                 </form>
             </div>
         );
@@ -149,7 +149,7 @@ class GameControl extends React.Component {
         return (
             <div>
                 <AddPlayerForm callBack={this.props.addPlayerCallBack}/>
-                <button onClick={this.props.startGameCallBack}>Start Game</button>
+                <button className="start-game-button" onClick={this.props.startGameCallBack}>Start Game</button>
             </div>
         );
     }
@@ -215,8 +215,26 @@ class GameControl extends React.Component {
             stateRender = this.renderMoved();
         }
 
+        let stats = null;
+        if (this.props.gameState !== "pregame") {
+            stats = (
+                <div className="stats">
+                    <div className="stat">
+                        <div className="stat-title">Current turn</div>
+                        <div className="stat-value">Derek</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-title">Remaining air</div>
+                        <div className="stat-value">40 / 40</div>
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div className="game-control">
+                <h2>Game Control</h2>
+                {stats}
                 {stateRender}
             </div>
         );
