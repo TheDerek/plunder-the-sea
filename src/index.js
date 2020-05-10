@@ -156,12 +156,17 @@ class GameControl extends React.Component {
 
     renderPlaying() {
         let player = this.props.currentPlayer;
+        let cannotTurnBack = player.position < 0 || player.hasTurnedBack || player.willTurnBack;
         return (
             <div className="content-box">
                 <p className="box-title">🎲 Roll the dice</p>
                 <div className="box-content">
-                    <button disabled>Make {player.name} turn back after moving</button>
-                    <button onClick={this.props.rollDiceCallback}>Roll the dice for {player.name}</button>
+                    <button disabled={cannotTurnBack} onClick={this.props.turnBackPlayer}>
+                        Make {player.name} turn back after moving
+                    </button>
+                    <button onClick={this.props.rollDiceCallback}>
+                        Roll the dice for {player.name}
+                    </button>
                 </div>
             </div>
         );
@@ -173,8 +178,12 @@ class GameControl extends React.Component {
             <div className="content-box">
                 <p className="box-title">🏊 Move the diver</p>
                 <div className="box-content">
-                    <p>{player.name} rolled a {this.props.rolled}</p>
-                    <button onClick={this.props.movePlayer}>Move {player.name} {this.props.rolled} spaces.</button>
+                    <p>
+                        {player.name} rolled a {this.props.rolled}
+                    </p>
+                    <button onClick={this.props.movePlayer}>
+                        Move {player.name} {this.props.rolled} spaces.
+                    </button>
                 </div>
             </div>
         );
@@ -183,6 +192,18 @@ class GameControl extends React.Component {
     renderMoved() {
         let player = this.props.currentPlayer;
         let plunderChip = null;
+
+        if (player.finished) {
+            return (
+                <div className="content-box">
+                    <p className="box-title">Made it back safe and sound</p>
+                    <div className="box-content">
+                        <p>Congratulations {getName(player)} made it back to the submarine</p>
+                        <button onClick={this.props.endTurn}>End turn</button>
+                    </div>
+                </div>
+            )
+        }
 
         return (
             <div className="content-box">
@@ -314,6 +335,7 @@ class Game extends React.Component {
                     movePlayer={this.movePlayer.bind(this)}
                     plunder={this.plunder.bind(this)}
                     endTurn={this.endTurn.bind(this)}
+                    turnBackPlayer={this.turnBackPlayer.bind(this)}
                     round={this.state.round}
                     air={this.state.air}
                 />
@@ -349,7 +371,10 @@ class Game extends React.Component {
                     position: -1, // On the sub
                     isCurrentTurn: false,
                     plunder: [],
-                    hasTurnedBack: false
+                    // willTurnBack will always be true if hasTurnedBack is true
+                    willTurnBack: false,
+                    hasTurnedBack: false,
+                    finished: false
                 },
             ]),
         });
@@ -374,12 +399,27 @@ class Game extends React.Component {
         const player = players[this.state.currentPlayerId];
         const chips = this.state.chips.slice();
         let spacesLeftToMove = this.state.rolled;
+        let movingBack = player.hasTurnedBack;
 
         // Remove the player from the chip they started on
         if (player.position > 0) {
             chips[player.position].player = null;
         }
 
+        if (player.hasTurnedBack) {
+            this.movePlayerBackwards(player, chips, spacesLeftToMove)
+        } else {
+            this.movePlayerForwards(player, chips, spacesLeftToMove);
+        }
+
+        this.setState({
+            gameState: "moved",
+            players: players,
+            chips: chips
+        })
+    }
+
+    movePlayerForwards(player, chips, spacesLeftToMove) {
         for (let i = player.position + 1; i < chips.length; i++) {
             let chip = chips[i];
 
@@ -396,12 +436,32 @@ class Game extends React.Component {
                 break;
             }
         }
+    }
 
-        this.setState({
-            gameState: "moved",
-            players: players,
-            chips: chips
-        })
+    movePlayerBackwards(player, chips, spacesLeftToMove) {
+        for (let i = player.position -1; ; i--) {
+            let chip = chips[i];
+
+            // Player has successfully made it back to the submarine
+            if (i < 0) {
+                player.finished = true;
+                break;
+            }
+
+            // Skip this chip if someone is on it
+            if (chip.player) {
+                continue;
+            }
+
+            spacesLeftToMove -= 1;
+
+            if (spacesLeftToMove === 0) {
+                player.position = i;
+                chip.player = player;
+
+                break;
+            }
+        }
     }
 
     handleStartGame() {
@@ -434,20 +494,50 @@ class Game extends React.Component {
     }
 
     endTurn() {
-        let nextPlayerId = null;
-        if (this.state.currentPlayerId >= this.state.players.length -1) {
-            nextPlayerId = 0;
-        } else {
-            nextPlayerId = this.state.currentPlayerId + 1;
+        let players = this.state.players.slice();
+        let allFinished = players.every((player) => player.finished);
+
+        if (allFinished) {
+            //TODO: End the round and return
         }
 
-        let players = this.state.players.slice();
-        players[this.state.currentPlayerId].isCurrentTurn = false;
-        players[nextPlayerId].isCurrentTurn = true;
+        let currentPlayer = players[this.state.currentPlayerId];
+        currentPlayer.isCurrentTurn = false;
+        if (currentPlayer.willTurnBack) {
+            currentPlayer.hasTurnedBack = true;
+        }
+
+        let nextPlayerId = this.state.currentPlayerId;
+        let nextPlayer = null;
+        do {
+            nextPlayerId = this.getNextPlayerId(nextPlayerId);
+            nextPlayer = players[nextPlayerId];
+        } while (nextPlayer.finished);
+
+        nextPlayer.isCurrentTurn = true;
 
         this.setState({
             gameState: "playing",
             currentPlayerId: nextPlayerId
+        })
+    }
+
+    getNextPlayerId(currentPlayerId) {
+        if (currentPlayerId >= this.state.players.length - 1) {
+            return 0;
+        }
+
+        return currentPlayerId + 1;
+    }
+
+    turnBackPlayer() {
+        let players = this.state.players.slice();
+        let currentPlayer = players[this.state.currentPlayerId];
+
+        currentPlayer.willTurnBack = true;
+
+        this.setState({
+            players: players
         })
     }
 }
