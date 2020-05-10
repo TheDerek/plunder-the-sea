@@ -225,6 +225,10 @@ class GameControl extends React.Component {
             stats = (
                 <div className="stats">
                     <div className="stat">
+                        <div className="stat-title">Round</div>
+                        <div className="stat-value">1 / 3</div>
+                    </div>
+                    <div className="stat">
                         <div className="stat-title">Current turn</div>
                         <div className="stat-value">Derek</div>
                     </div>

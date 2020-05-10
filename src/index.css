@@ -209,6 +209,10 @@ header {
     margin: 5px;
 }
 
+.stat:first-child {
+    margin-left: 0;
+}
+
 .stat div {
     padding: 10px;
 }
