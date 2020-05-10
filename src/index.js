@@ -103,7 +103,7 @@ function PlayerPlunder(props) {
 
 function getName(player) {
     if (player.hasTurnedBack) {
-        return "(←) " + player.name;
+        return "← " + player.name;
     } else {
         return player.name + " →";
     }
@@ -226,15 +226,15 @@ class GameControl extends React.Component {
                 <div className="stats">
                     <div className="stat">
                         <div className="stat-title">Round</div>
-                        <div className="stat-value">1 / 3</div>
+                        <div className="stat-value">{this.props.round.current} / {this.props.round.max}</div>
                     </div>
                     <div className="stat">
                         <div className="stat-title">Current turn</div>
-                        <div className="stat-value">Derek</div>
+                        <div className="stat-value">{getName(this.props.currentPlayer)}</div>
                     </div>
                     <div className="stat">
                         <div className="stat-title">Remaining air</div>
-                        <div className="stat-value">40 / 40</div>
+                        <div className="stat-value">{this.props.air.current} / {this.props.air.max}</div>
                     </div>
                 </div>
             );
@@ -258,7 +258,9 @@ class Game extends React.Component {
             players: [],
             gameState: "pregame",
             currentPlayerId: null,
-            rolled: null
+            rolled: null,
+            air: {current: 40, max: 40},
+            round: {current: 1, max: 3}
         };
     }
 
@@ -312,6 +314,8 @@ class Game extends React.Component {
                     movePlayer={this.movePlayer.bind(this)}
                     plunder={this.plunder.bind(this)}
                     endTurn={this.endTurn.bind(this)}
+                    round={this.state.round}
+                    air={this.state.air}
                 />
                 <Players players={this.state.players}/>
             </div>

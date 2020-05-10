@@ -207,6 +207,7 @@ header {
     border-radius: 3px;
     overflow: hidden;
     margin: 5px;
+    max-height: 2.5em;
 }
 
 .stat:first-child {
