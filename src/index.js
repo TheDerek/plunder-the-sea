@@ -290,7 +290,7 @@ class Game extends React.Component {
             gameState: "pregame",
             currentPlayerId: null,
             rolled: null,
-            air: {current: 40, max: 40},
+            air: {current: 25, max: 25},
             round: {current: 1, max: 3}
         };
     }
