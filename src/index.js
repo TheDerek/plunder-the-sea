@@ -157,10 +157,20 @@ class GameControl extends React.Component {
     renderPlaying() {
         let player = this.props.currentPlayer;
         let cannotTurnBack = player.position < 0 || player.hasTurnedBack || player.willTurnBack;
+        let airText = null;
+        if (player.plunder.length > 0) {
+            let numPlunder = player.plunder.length;
+            let items = numPlunder > 1 ? "items" : "item";
+            airText = "Reduced air by " + numPlunder + " because " + getName(player) + " holds " + numPlunder + " " + items + " of plunder";
+        } else {
+            airText = "Not reducing air because " + getName(player) + " holds no rune chips";
+        }
+
         return (
             <div className="content-box">
                 <p className="box-title">🎲 Roll the dice</p>
                 <div className="box-content">
+                    <p>{airText}</p>
                     <button disabled={cannotTurnBack} onClick={this.props.turnBackPlayer}>
                         Make {player.name} turn back after moving
                     </button>
@@ -497,6 +507,8 @@ class Game extends React.Component {
         let players = this.state.players.slice();
         let allFinished = players.every((player) => player.finished);
 
+        // TODO: Check if we have run out of air
+
         if (allFinished) {
             //TODO: End the round and return
         }
@@ -516,9 +528,16 @@ class Game extends React.Component {
 
         nextPlayer.isCurrentTurn = true;
 
+        // Reduce air for the next player's plunder#
+        let air = {
+            max: this.state.air.max,
+            current: this.state.air.current - nextPlayer.plunder.length
+        }
+
         this.setState({
             gameState: "playing",
-            currentPlayerId: nextPlayerId
+            currentPlayerId: nextPlayerId,
+            air: air
         })
     }
 
