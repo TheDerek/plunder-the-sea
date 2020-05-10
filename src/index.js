@@ -134,7 +134,7 @@ function Players(props) {
         <div className="players">
             <div className="players-container">
                 <h2 className="players-title">Players</h2>
-                <div class="players-boxes">{playerItems}</div>
+                <div className="players-boxes">{playerItems}</div>
             </div>
         </div>
     );
@@ -199,6 +199,17 @@ class GameControl extends React.Component {
         );
     }
 
+    renderRoundOver() {
+        return (
+            <div className="content-box">
+                <p className="box-title">Round Results</p>
+                <div className="box-content">
+                    <button onClick={this.props.startGameCallBack}>Next round</button>
+                </div>
+            </div>
+        )
+    }
+
     renderMoved() {
         let player = this.props.currentPlayer;
         let plunderChip = null;
@@ -251,8 +262,12 @@ class GameControl extends React.Component {
             stateRender = this.renderMoved();
         }
 
+        if (this.props.gameState === "roundOver") {
+            stateRender = this.renderRoundOver();
+        }
+
         let stats = null;
-        if (this.props.gameState !== "pregame") {
+        if (this.props.gameState !== "pregame" && this.props.gameState !== "roundOver") {
             stats = (
                 <div className="stats">
                     <div className="stat">
@@ -291,8 +306,31 @@ class Game extends React.Component {
             currentPlayerId: null,
             rolled: null,
             air: {current: 25, max: 25},
-            round: {current: 1, max: 3}
+            round: {current: 1, max: 3},
+            availablePlunder: this.generateAvailablePlunder()
         };
+    }
+
+    generateAvailablePlunder() {
+        let amountPerValue = 2;
+        let levels = {
+            1: {min: 0, max: 3},
+            2: {min: 4, max: 7},
+            3: {min: 8, max: 11},
+            4: {min: 12, max: 15}
+        }
+
+        let plunder = {};
+        for (const level in levels) {
+            plunder[level] = [];
+            for (let x = levels[level].min; x <= levels[level].max; x++) {
+                for(let i = 0; i < amountPerValue; i++) {
+                    plunder[level].push(x);
+                }
+            }
+        }
+
+        return plunder;
     }
 
     getCurrentPlayer() {
@@ -384,7 +422,8 @@ class Game extends React.Component {
                     // willTurnBack will always be true if hasTurnedBack is true
                     willTurnBack: false,
                     hasTurnedBack: false,
-                    finished: false
+                    finished: false,
+                    money: 0
                 },
             ]),
         });
@@ -510,7 +549,7 @@ class Game extends React.Component {
         // TODO: Check if we have run out of air
 
         if (allFinished) {
-            //TODO: End the round and return
+            return this.endRound();
         }
 
         let currentPlayer = players[this.state.currentPlayerId];
@@ -538,6 +577,52 @@ class Game extends React.Component {
             gameState: "playing",
             currentPlayerId: nextPlayerId,
             air: air
+        })
+    }
+
+    endRound() {
+        let players = this.state.players.slice();
+
+        // Reset players and add money
+        for (let player of players) {
+            // Reset players
+            player.position = -1;
+            player.hasTurnedBack = false;
+            player.willTurnBack = false;
+            player.finished = false;
+
+            // Turn plunder into money
+            player.spentPlunder = player.plunder.map(plunder => {
+                // plunder is either 1, 2 or 3
+            })
+        }
+
+        // Remove plundered rune chips
+        let chips = this.state.chips.slice();
+        for (let [index, chip] of chips.entries()) {
+            if (chip.plundered) {
+                chips.splice(index, 1);
+            }
+        }
+
+        // Reset the air
+        let air = {
+            max: this.state.air.max,
+            current: this.state.air.max
+        }
+
+        // Increase the round
+        let round = {
+            current: this.state.round.current + 1,
+            max: this.state.round.max
+        };
+
+        this.setState({
+            gameState: "roundOver",
+            air: air,
+            players: players,
+            round: round,
+            chips: chips
         })
     }
 
