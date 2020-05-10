@@ -60,9 +60,9 @@ class AddPlayerForm extends React.Component {
 
     render() {
         return (
-            <div className="add-player-form-container">
-                <p>Add player</p>
-                <form onSubmit={this.handleSubmit}>
+            <div className="content-box">
+                <p className="box-title">Add player</p>
+                <form className="box-content" onSubmit={this.handleSubmit}>
                     <label>Player name</label>
                     <input
                         type="text"
@@ -157,12 +157,12 @@ class GameControl extends React.Component {
     renderPlaying() {
         let player = this.props.currentPlayer;
         return (
-            <div>
-                <h2>Playing the game!</h2>
-                <p>Current turn: {player.name}</p>
-                <button disabled>Make {player.name} turn back after moving</button>
-                <br/>
-                <button onClick={this.props.rollDiceCallback}>Roll the dice for {player.name}</button>
+            <div className="content-box">
+                <p className="box-title">🎲 Roll the dice</p>
+                <div className="box-content">
+                    <button disabled>Make {player.name} turn back after moving</button>
+                    <button onClick={this.props.rollDiceCallback}>Roll the dice for {player.name}</button>
+                </div>
             </div>
         );
     }
@@ -170,10 +170,12 @@ class GameControl extends React.Component {
     renderRolled() {
         let player = this.props.currentPlayer;
         return (
-            <div>
-                <h2>Playing the game!</h2>
-                <p>{player.name} rolled a {this.props.rolled}</p>
-                <button onClick={this.props.movePlayer}>Move {player.name} {this.props.rolled} spaces.</button>
+            <div className="content-box">
+                <p className="box-title">🏊 Move the diver</p>
+                <div className="box-content">
+                    <p>{player.name} rolled a {this.props.rolled}</p>
+                    <button onClick={this.props.movePlayer}>Move {player.name} {this.props.rolled} spaces.</button>
+                </div>
             </div>
         );
     }
@@ -183,15 +185,18 @@ class GameControl extends React.Component {
         let plunderChip = null;
 
         return (
-            <div>
-                <p>{getName(player)} has moved to chip {player.position + 1} !</p>
-                <button
-                    disabled={this.props.currentChip.plundered}
-                    onClick={this.props.plunder}
-                >
-                    Plunder current location
-                </button>
-                <button onClick={this.props.endTurn}>End turn</button>
+            <div className="content-box">
+                <p className="box-title">💰 Commence plundering</p>
+                <div className="box-content">
+                    <p>{getName(player)} has moved to chip {player.position + 1} !</p>
+                    <button
+                        disabled={this.props.currentChip.plundered}
+                        onClick={this.props.plunder}
+                    >
+                        Plunder current location
+                    </button>
+                    <button onClick={this.props.endTurn}>End turn</button>
+                </div>
             </div>
         )
     }

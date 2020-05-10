@@ -150,12 +150,13 @@ header {
     text-align: right;
 }
 
-.add-player-form-container {
+.content-box {
     border: 1px black solid;
     border-radius: 3px;
+    overflow: hidden;
 }
 
-.add-player-form-container p {
+.content-box .box-title {
     border-bottom: 1px black solid;
     text-align: center;
     padding: 10px;
@@ -163,25 +164,35 @@ header {
     background-color: #72727E;
 }
 
-.add-player-form-container form {
+.content-box .box-content {
     padding: 10px;
 }
 
-.add-player-form-container form label {
+.content-box form label {
     display: block;
     margin-bottom: 4px;
 }
 
-.add-player-form-container form input[type=text] {
+.content-box form input[type=text] {
     display: block;
     width: 100%;
 }
 
-.add-player-form-container form input[type=submit] {
+.content-box form input[type=submit] {
     margin-top: 10px;
     display: block;
     width: 100%;
     padding: 3px;
+}
+
+.content-box button {
+    display: block;
+    width: 100%;
+    padding: 5px;
+}
+
+.content-box button:not(:first-child) {
+    margin-top: 5px;
 }
 
 .start-game-button {
