@@ -92,7 +92,9 @@ function Plunder(props) {
 }
 
 function PlayerPlunder(props) {
-    let plunderItems = props.plunder.map((item) => React.createElement(Plunder, {level: item}))
+    let plunderItems = props.plunder.map(
+        (item, index) => React.createElement(Plunder, {key: index, level: item})
+    )
 
     return (
         <div className="player-items">
@@ -299,16 +301,34 @@ class GameControl extends React.Component {
 class Game extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            chips: this.createChips(),
-            players: [],
-            gameState: "pregame",
-            currentPlayerId: null,
-            rolled: null,
-            air: {current: 25, max: 25},
-            round: {current: 1, max: 3},
-            availablePlunder: this.generateAvailablePlunder()
-        };
+
+        //let oldState = localStorage.getItem("gameState");
+        let oldState = '{"chips":[{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":true},{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":true},{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":true},{"level":1,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false}],"players":[{"index":0,"name":"a","displayName":"a","position":1,"isCurrentTurn":true,"plunder":[1,1,1],"willTurnBack":true,"hasTurnedBack":true,"finished":true,"money":0}],"gameState":"moved","currentPlayerId":0,"rolled":2,"air":{"max":25,"current":17},"round":{"current":1,"max":3},"availablePlunder":{"1":[0,0,1,1,2,2,3,3],"2":[4,4,5,5,6,6,7,7],"3":[8,8,9,9,10,10,11,11],"4":[12,12,13,13,14,14,15,15]}}';
+        if (oldState) {
+            this.state = JSON.parse(oldState);
+        } else {
+            this.state = {
+                chips: this.createChips(),
+                players: [],
+                gameState: "pregame",
+                currentPlayerId: null,
+                rolled: null,
+                air: {current: 25, max: 25},
+                round: {current: 1, max: 3},
+                availablePlunder: this.generateAvailablePlunder()
+            };
+        }
+    }
+
+    setState(newState, callback = () => {
+    }) {
+        super.setState(newState, () => {
+            callback();
+
+            let stringState = JSON.stringify(this.state);
+            localStorage.setItem("gameState", stringState);
+            console.log("Saved " + Buffer.byteLength(stringState) + " bytes of memory to local storage")
+        });
     }
 
     generateAvailablePlunder() {
@@ -324,7 +344,7 @@ class Game extends React.Component {
         for (const level in levels) {
             plunder[level] = [];
             for (let x = levels[level].min; x <= levels[level].max; x++) {
-                for(let i = 0; i < amountPerValue; i++) {
+                for (let i = 0; i < amountPerValue; i++) {
                     plunder[level].push(x);
                 }
             }
@@ -334,7 +354,6 @@ class Game extends React.Component {
     }
 
     getCurrentPlayer() {
-        console.log(this.state.players[this.state.currentPlayerId]);
         return this.state.players[this.state.currentPlayerId];
     }
 
@@ -488,7 +507,7 @@ class Game extends React.Component {
     }
 
     movePlayerBackwards(player, chips, spacesLeftToMove) {
-        for (let i = player.position -1; ; i--) {
+        for (let i = player.position - 1; ; i--) {
             let chip = chips[i];
 
             // Player has successfully made it back to the submarine
@@ -582,6 +601,8 @@ class Game extends React.Component {
 
     endRound() {
         let players = this.state.players.slice();
+        let availablePlunder = this.state.availablePlunder;
+        let playerResultsMessage = []; //TODO Append this with player results (duh)
 
         // Reset players and add money
         for (let player of players) {
@@ -594,7 +615,18 @@ class Game extends React.Component {
             // Turn plunder into money
             player.spentPlunder = player.plunder.map(plunder => {
                 // plunder is either 1, 2 or 3
+
+                // Get a random item of plunder corresponding to the level
+                // of plunder the player is holding
+                let plunderForLevel = availablePlunder[plunder];
+
+
+                player.money += plunderForLevel.splice(Math.floor(Math.random() * plunderForLevel.length), 1)[0];
             })
+
+            player.plunder = [];
+
+            console.log("Players new money is " + player.money)
         }
 
         // Remove plundered rune chips
