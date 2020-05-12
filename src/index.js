@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
+import {roundEndState} from "./exampleStates.js"
 
 function Chip(props) {
     let playerElement = null;
@@ -188,7 +189,7 @@ class GameControl extends React.Component {
         let player = this.props.currentPlayer;
         return (
             <div className="content-box">
-                <p className="box-title">🏊 Move the diver</p>
+                <div className="box-title">🏊 Move the diver</div>
                 <div className="box-content">
                     <p>
                         {player.name} rolled a {this.props.rolled}
@@ -202,10 +203,62 @@ class GameControl extends React.Component {
     }
 
     renderRoundOver() {
+        let results = this.props.players.map((player, index) => {
+            if (player.drownedLastRound) {
+                return (
+                    <li key={index}>
+                        <p>
+                            <b>{player.name}</b> failed to make it back to the submarine before the air ran out. Any
+                            plunder they were holding sank to the bottom of the ocean as they made a frenzied dash to
+                            the submarine before they drowned.
+                        </p>
+                        <p>Because of this their gains for the expedition remain <b>£0</b>.</p>
+                    </li>
+                );
+            }
+
+            if (player.spentPlunder.length === 0) {
+                return (
+                    <li key={index}>
+                        <p>
+                            <b>{player.name}</b> made it back to the submarine safe and sound. However they forgot to
+                            plunder
+                            any treasure along the way, making their expedition kind of pointless.
+                        </p>
+                        <p>Because of this their gains for the expedition remain <b>£0</b>.</p>
+                    </li>
+                );
+            }
+
+            let plunderItems = player.spentPlunder.map(plunder => {
+                return (
+                    <li key={index}>
+                        A level {plunder.level} treasure worth £{plunder.value}
+                    </li>
+                )
+            });
+
+            return (
+                <li key={index}>
+                    <p>
+                        <b>{player.name}</b> successfully made it back to the submarine before the air ran out and with
+                        plunder to boot! They managed to gather:
+                    </p>
+                    <ul>
+                        {plunderItems}
+                    </ul>
+                    Bringing their total gains for the expedition up to <b>£{player.money}</b>.
+                </li>
+            )
+        });
+
         return (
             <div className="content-box">
-                <p className="box-title">Round Results</p>
+                <div className="box-title">Round Results</div>
                 <div className="box-content">
+                    <ul>
+                        {results}
+                    </ul>
                     <button onClick={this.props.startGameCallBack}>Next round</button>
                 </div>
             </div>
@@ -219,7 +272,7 @@ class GameControl extends React.Component {
         if (player.finished) {
             return (
                 <div className="content-box">
-                    <p className="box-title">Made it back safe and sound</p>
+                    <div className="box-title">Made it back safe and sound</div>
                     <div className="box-content">
                         <p>Congratulations {getName(player)} made it back to the submarine</p>
                         <button onClick={this.props.endTurn}>End turn</button>
@@ -230,7 +283,7 @@ class GameControl extends React.Component {
 
         return (
             <div className="content-box">
-                <p className="box-title">💰 Commence plundering</p>
+                <div className="box-title">💰 Commence plundering</div>
                 <div className="box-content">
                     <p>{getName(player)} has moved to chip {player.position + 1} !</p>
                     <button
@@ -303,9 +356,9 @@ class Game extends React.Component {
         super(props);
 
         //let oldState = localStorage.getItem("gameState");
-        let oldState = '{"chips":[{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":true},{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":true},{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":false},{"level":1,"player":null,"plundered":true},{"level":1,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":2,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":3,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false},{"level":4,"player":null,"plundered":false}],"players":[{"index":0,"name":"a","displayName":"a","position":1,"isCurrentTurn":true,"plunder":[1,1,1],"willTurnBack":true,"hasTurnedBack":true,"finished":true,"money":0}],"gameState":"moved","currentPlayerId":0,"rolled":2,"air":{"max":25,"current":17},"round":{"current":1,"max":3},"availablePlunder":{"1":[0,0,1,1,2,2,3,3],"2":[4,4,5,5,6,6,7,7],"3":[8,8,9,9,10,10,11,11],"4":[12,12,13,13,14,14,15,15]}}';
-        if (oldState) {
-            this.state = JSON.parse(oldState);
+        if (/*oldState*/true) {
+            this.state = roundEndState;
+            //this.state = JSON.parse(oldState);
         } else {
             this.state = {
                 chips: this.createChips(),
@@ -405,6 +458,7 @@ class Game extends React.Component {
                     turnBackPlayer={this.turnBackPlayer.bind(this)}
                     round={this.state.round}
                     air={this.state.air}
+                    players={this.state.players}
                 />
                 <Players players={this.state.players}/>
             </div>
@@ -434,7 +488,6 @@ class Game extends React.Component {
                 {
                     index: this.state.players.length,
                     name: name,
-                    displayName: name,
                     position: -1, // On the sub
                     isCurrentTurn: false,
                     plunder: [],
@@ -442,7 +495,8 @@ class Game extends React.Component {
                     willTurnBack: false,
                     hasTurnedBack: false,
                     finished: false,
-                    money: 0
+                    money: 0,
+                    drownedLastRound: false
                 },
             ]),
         });
@@ -602,7 +656,6 @@ class Game extends React.Component {
     endRound() {
         let players = this.state.players.slice();
         let availablePlunder = this.state.availablePlunder;
-        let playerResultsMessage = []; //TODO Append this with player results (duh)
 
         // Reset players and add money
         for (let player of players) {
@@ -612,6 +665,8 @@ class Game extends React.Component {
             player.willTurnBack = false;
             player.finished = false;
 
+            // TODO implement drowning
+
             // Turn plunder into money
             player.spentPlunder = player.plunder.map(plunder => {
                 // plunder is either 1, 2 or 3
@@ -620,8 +675,16 @@ class Game extends React.Component {
                 // of plunder the player is holding
                 let plunderForLevel = availablePlunder[plunder];
 
+                // Remove the plunder from the global store and add it to the
+                // players wealth
+                let value = plunderForLevel.splice(Math.floor(Math.random() * plunderForLevel.length), 1)[0];
 
-                player.money += plunderForLevel.splice(Math.floor(Math.random() * plunderForLevel.length), 1)[0];
+                player.money += value
+
+                return {
+                    level: plunder,
+                    value: value
+                }
             })
 
             player.plunder = [];

@@ -134,6 +134,7 @@ header {
 .game-control {
     float: left;
     min-width: 50%;
+    max-width: 50%;
 }
 
 .game-control h2 {
@@ -227,4 +228,13 @@ header {
 
 .stat-value {
     display: inline-block;
+}
+
+ul {
+    margin: 1em 0;
+    padding-left: 40px;
+}
+
+p {
+    margin: 1em 0;
 }
