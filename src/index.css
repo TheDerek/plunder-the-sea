@@ -166,7 +166,7 @@ header {
 }
 
 .content-box .box-content {
-    padding: 10px;
+    padding: 5px 10px 10px 10px;
 }
 
 .content-box form label {
@@ -237,4 +237,8 @@ ul {
 
 p {
     margin: 1em 0;
+}
+
+header p {
+    margin: 0;
 }

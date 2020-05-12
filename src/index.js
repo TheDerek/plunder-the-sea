@@ -171,7 +171,7 @@ class GameControl extends React.Component {
 
         return (
             <div className="content-box">
-                <p className="box-title">🎲 Roll the dice</p>
+                <div className="box-title">🎲 Roll the dice</div>
                 <div className="box-content">
                     <p>{airText}</p>
                     <button disabled={cannotTurnBack} onClick={this.props.turnBackPlayer}>
@@ -254,7 +254,9 @@ class GameControl extends React.Component {
 
         return (
             <div className="content-box">
-                <div className="box-title">Round Results</div>
+                <div className="box-title">
+                    Results for round {this.props.round.current - 1}/{this.props.round.max}
+                </div>
                 <div className="box-content">
                     <ul>
                         {results}
