@@ -1,4 +1,4 @@
 export const config = {
   loadPreviousState: false,
-  exampleState: null
+  exampleState: "lastTurnState"
 }

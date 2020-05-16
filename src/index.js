@@ -159,29 +159,41 @@ class GameControl extends React.Component {
     let cannotTurnBack =
       player.position < 0 || player.hasTurnedBack || player.willTurnBack;
     let airText = null;
+    let lastRoundText = null;
+
     if (player.plunder.length > 0) {
       let numPlunder = player.plunder.length;
       let items = numPlunder > 1 ? "items" : "item";
-      airText =
-        "Reduced air by " +
-        numPlunder +
-        " because " +
-        getName(player) +
-        " holds " +
-        numPlunder +
-        " " +
-        items +
-        " of plunder";
+      airText = (
+        <p>
+          Reduced air by {numPlunder} because {getName(player)} holds{" "}
+          {numPlunder} {items} of plunder
+        </p>
+      );
     } else {
-      airText =
-        "Not reducing air because " + getName(player) + " holds no rune chips";
+      airText = (
+        <p>
+          {`Not reducing air because ${getName(player)} holds no rune chips`}
+        </p>
+      );
+    }
+
+    if (this.props.air.current <= 0) {
+      lastRoundText = (
+        <p>
+          The submarine has run out of air for the divers! This will be the{" "}
+          <b>last turn of the round</b>. Hopefully {player.name} manages to
+          make it back to the submarine!
+        </p>
+      );
     }
 
     return (
       <div className="content-box">
         <div className="box-title">🎲 Roll the dice</div>
         <div className="box-content">
-          <p>{airText}</p>
+          {airText}
+          {lastRoundText}
           <button disabled={cannotTurnBack} onClick={this.props.turnBackPlayer}>
             Make {player.name} turn back after moving
           </button>
