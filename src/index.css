@@ -115,9 +115,9 @@ header {
 
 .plunder {
   display: inline-block;
-  padding: 2px;
+  padding: 0 2px 0 2px;
+  margin: 0 2px 0 2px;
   border-radius: 5px;
-  margin: 3px;
 }
 
 .players {
@@ -217,7 +217,7 @@ header {
   margin-left: 0;
 }
 
-.stat div {
+.stat > div {
   padding: 10px;
 }
 

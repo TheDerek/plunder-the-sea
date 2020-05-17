@@ -93,7 +93,7 @@ function PlayerPlunder(props) {
     React.createElement(Plunder, { key: index, level: item })
   );
 
-  return <div className="player-items">{plunderItems}</div>;
+  return <div className="stat-value">{plunderItems}</div>;
 }
 
 function getName(player) {
@@ -105,7 +105,7 @@ function getName(player) {
 }
 
 function Player(props) {
-  let playerClass = "player";
+  let playerClass = "stat";
   if (props.player.isCurrentTurn) {
     playerClass += " player-current";
   }
@@ -114,7 +114,7 @@ function Player(props) {
 
   return (
     <div className={playerClass}>
-      <div className="player-name">{props.player.name} →</div>
+      <div className="stat-title">{props.player.name} →</div>
       <PlayerPlunder plunder={props.player.plunder} />
     </div>
   );
@@ -643,11 +643,13 @@ class Game extends React.Component {
     let nextPlayerId = Math.floor(Math.random() * this.state.players.length);
 
     let players = this.state.players.slice();
+    players.forEach(player => player.drownedLastRound = false);
     players[nextPlayerId].isCurrentTurn = true;
 
     this.setState({
       gameState: "playing",
       currentPlayerId: nextPlayerId,
+      players: players
     });
   }
 
@@ -715,11 +717,11 @@ class Game extends React.Component {
 
     // Reset players and add money
     for (let player of players) {
+
       // Drown the player if they didn't make it back to the submarine
-      if (player.position >= 0) {
+      if (!player.finished) {
         player.drownedLastRound = true;
       }
-
 
       // Reset players
       player.position = -1;
