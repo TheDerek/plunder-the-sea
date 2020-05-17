@@ -107,13 +107,18 @@ function getName(player) {
 function Player(props) {
   let playerClass = "stat";
   if (props.player.isCurrentTurn) {
-    playerClass += " player-current";
+    playerClass += " stat-highlighted";
+  }
+  let endClass = "stat-end";
+  if (props.player.plunder.length === 0) {
+    endClass += " stat-empty";
   }
 
   return (
     <div className={playerClass}>
       <div className="stat-title">{getName(props.player)}</div>
       <PlayerPlunder plunder={props.player.plunder} />
+      <div className={endClass}>£{props.player.money}</div>
     </div>
   );
 }
@@ -215,6 +220,16 @@ class GameControl extends React.Component {
     let plunderCount = player.plunder.length;
     let items = plunderCount > 1 ? `${plunderCount} items` : "1 item";
 
+    if (rolled.actual == 0) {
+      return (
+        <p>
+          {player.name} rolled a {rolled.total}. However by being exceptionally
+          greedy and holding {items} of plunder they cannot move an inch,
+          resulting in them being <b>completely stuck for this turn</b>.
+        </p>
+      );
+    }
+
     if (rolled.reducedBy > 0) {
       let spaces = rolled.actual > 1 ? "spaces" : "space";
       return (
@@ -227,14 +242,6 @@ class GameControl extends React.Component {
             </small>
           </em>
           <b>{rolled.actual}</b> {spaces}.
-        </p>
-      );
-    }
-
-    if (rolled.actual == 0) {
-      return (
-        <p>
-          {player.name} rolled a {rolled.total}. However by being exceptionally greedy and holding {items} of plunder they cannot move an inch, resulting in them being <b>completely stuck for this turn</b>.
         </p>
       );
     }
@@ -268,7 +275,7 @@ class GameControl extends React.Component {
               before they drowned.
             </p>
             <p>
-              Because of this their gains for the expedition remain <b>£0</b>.
+              Because of this their gains for the expedition remain <b>£{player.money}</b>.
             </p>
           </li>
         );
@@ -355,6 +362,13 @@ class GameControl extends React.Component {
             onClick={this.props.plunder}
           >
             Plunder current location
+          </button>
+          { /* TODO: Implement dropping plunder */}
+          <button
+            disabled={!this.props.currentChip.plundered || player.plunder.length === 0}
+            onClick={this.props.dropPlunder}
+          >
+            Drop plunder
           </button>
           <button onClick={this.props.endTurn}>End turn</button>
         </div>
@@ -607,7 +621,7 @@ class Game extends React.Component {
       rolled: {
         total: total,
         reducedBy: reducedBy,
-        actual: actual
+        actual: actual,
       },
     });
   }
@@ -619,15 +633,18 @@ class Game extends React.Component {
     let spacesLeftToMove = this.state.rolled.actual;
     let movingBack = player.hasTurnedBack;
 
-    // Remove the player from the chip they started on
-    if (player.position >= 0) {
-      chips[player.position].player = null;
-    }
+    if (spacesLeftToMove !== 0)
+    {
+      // Remove the player from the chip they started on
+      if (player.position >= 0) {
+        chips[player.position].player = null;
+      }
 
-    if (player.hasTurnedBack) {
-      this.movePlayerBackwards(player, chips, spacesLeftToMove);
-    } else {
-      this.movePlayerForwards(player, chips, spacesLeftToMove);
+      if (player.hasTurnedBack) {
+        this.movePlayerBackwards(player, chips, spacesLeftToMove);
+      } else {
+        this.movePlayerForwards(player, chips, spacesLeftToMove);
+      }
     }
 
     this.setState({
@@ -828,7 +845,7 @@ class Game extends React.Component {
       players: players,
       round: round,
       chips: chips,
-      availablePlunder: availablePlunder
+      availablePlunder: availablePlunder,
     });
   }
 

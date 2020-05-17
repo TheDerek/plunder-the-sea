@@ -213,6 +213,10 @@ header {
   max-height: 2.5em;
 }
 
+.stat-highlighted {
+    border-width: 2px;
+}
+
 .stat:first-child {
   margin-left: 0;
 }
@@ -230,6 +234,19 @@ header {
 
 .stat-value {
   display: inline-block;
+}
+
+.stat-value:empty {
+    display: none;
+}
+
+.stat-end {
+  display: inline-block;
+  border-left: 1px black solid;
+}
+
+.stat-empty {
+    border-left: none;
 }
 
 ul {
