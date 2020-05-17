@@ -671,8 +671,12 @@ class Game extends React.Component {
     let players = this.state.players.slice();
     let allFinished = players.every((player) => player.finished);
 
-    // TODO: Check if we have run out of air
+    // End the round if we have run out of air
+    if (this.state.air.current <= 0) {
+      return this.endRound();
+    }
 
+    // End the round if all players make it back to the submarine
     if (allFinished) {
       return this.endRound();
     }
@@ -711,13 +715,17 @@ class Game extends React.Component {
 
     // Reset players and add money
     for (let player of players) {
+      // Drown the player if they didn't make it back to the submarine
+      if (player.position >= 0) {
+        player.drownedLastRound = true;
+      }
+
+
       // Reset players
       player.position = -1;
       player.hasTurnedBack = false;
       player.willTurnBack = false;
       player.finished = false;
-
-      // TODO implement drowning
 
       // Turn plunder into money
       player.spentPlunder = player.plunder.map((plunder) => {

@@ -271,7 +271,7 @@ export const exampleStates = {
     players: [
       {
         index: 0,
-        name: "asd",
+        name: "Derek",
         position: 3,
         isCurrentTurn: true,
         plunder: [1],
