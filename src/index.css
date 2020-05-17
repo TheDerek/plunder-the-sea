@@ -6,8 +6,9 @@ body {
   box-sizing: border-box;
 }
 
-body {
+html, body {
   font-family: Sans-Serif;
+  height: 100%;
 }
 
 header {
@@ -30,14 +31,15 @@ header {
   border: 1px black solid;
   border-radius: 5px;
   min-width: 9em;
+  vertical-align: middle;
+  min-height: 4em;
+  overflow: hidden;
 }
 
 .chip-level {
-  border-radius: 4px 4px 0 0;
   border-bottom: solid black 1px;
   padding: 3px;
   text-align: center;
-  margin-bottom: 0.5em;
 }
 
 .chip-level-1 {
@@ -63,6 +65,12 @@ header {
 .chip-player {
   min-height: 1.3em;
   text-align: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100%;
+  justify-content: center;
+  min-height: inherit;
 }
 
 .chip-status {

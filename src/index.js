@@ -30,7 +30,6 @@ function Chip(props) {
     <div className="chip">
       <div className={levelClass}>{levelText}</div>
       {playerElement}
-      <div className={chipStatus}>{plunderStatus}</div>
     </div>
   );
 }
