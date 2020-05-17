@@ -110,11 +110,9 @@ function Player(props) {
     playerClass += " player-current";
   }
 
-  let playerName = props.player.name;
-
   return (
     <div className={playerClass}>
-      <div className="stat-title">{props.player.name} →</div>
+      <div className="stat-title">{getName(props.player)}</div>
       <PlayerPlunder plunder={props.player.plunder} />
     </div>
   );
@@ -182,8 +180,8 @@ class GameControl extends React.Component {
       lastRoundText = (
         <p>
           The submarine has run out of air for the divers! This will be the{" "}
-          <b>last turn of the round</b>. Hopefully {player.name} manages to
-          make it back to the submarine!
+          <b>last turn of the round</b>. Hopefully {player.name} manages to make
+          it back to the submarine!
         </p>
       );
     }
@@ -205,17 +203,53 @@ class GameControl extends React.Component {
     );
   }
 
+  getRolledText(rolled, player) {
+    if (rolled.reducedBy == 0) {
+      return (
+        <p>
+          {player.name} rolled a <b>{rolled.actual}</b>.
+        </p>
+      );
+    }
+
+    let plunderCount = player.plunder.length;
+    let items = plunderCount > 1 ? `${plunderCount} items` : "1 item";
+
+    if (rolled.reducedBy > 0) {
+      let spaces = rolled.actual > 1 ? "spaces" : "space";
+      return (
+        <p>
+          {player.name} rolled a {rolled.total}. However they are currently
+          holding {items} of plunder, meaning they can only move{" "}
+          <em>
+            <small>
+              ({rolled.total}-{rolled.reducedBy}=)
+            </small>
+          </em>
+          <b>{rolled.actual}</b> {spaces}.
+        </p>
+      );
+    }
+
+    if (rolled.actual == 0) {
+      return (
+        <p>
+          {player.name} rolled a {rolled.total}. However by being exceptionally greedy and holding {items} of plunder they cannot move an inch, resulting in them being <b>completely stuck for this turn</b>.
+        </p>
+      );
+    }
+  }
+
   renderRolled() {
     let player = this.props.currentPlayer;
+
     return (
       <div className="content-box">
         <div className="box-title">🏊 Move the diver</div>
         <div className="box-content">
-          <p>
-            {player.name} rolled a {this.props.rolled}
-          </p>
+          {this.getRolledText(this.props.rolled, player)}
           <button onClick={this.props.movePlayer}>
-            Move {player.name} {this.props.rolled} spaces.
+            Move {player.name} {this.props.rolled.actual} spaces.
           </button>
         </div>
       </div>
@@ -560,11 +594,21 @@ class Game extends React.Component {
     let dice1 = faces[Math.floor(Math.random() * faces.length)];
     let dice2 = faces[Math.floor(Math.random() * faces.length)];
 
-    let rolled = dice1 + dice2;
+    let total = dice1 + dice2;
+    let reducedBy = this.getCurrentPlayer().plunder.length;
+    let actual = total - reducedBy;
+
+    if (actual < 0) {
+      actual = 0;
+    }
 
     this.setState({
       gameState: "rolled",
-      rolled: rolled,
+      rolled: {
+        total: total,
+        reducedBy: reducedBy,
+        actual: actual
+      },
     });
   }
 
@@ -572,11 +616,11 @@ class Game extends React.Component {
     const players = this.state.players.slice();
     const player = players[this.state.currentPlayerId];
     const chips = this.state.chips.slice();
-    let spacesLeftToMove = this.state.rolled;
+    let spacesLeftToMove = this.state.rolled.actual;
     let movingBack = player.hasTurnedBack;
 
     // Remove the player from the chip they started on
-    if (player.position > 0) {
+    if (player.position >= 0) {
       chips[player.position].player = null;
     }
 
@@ -643,13 +687,13 @@ class Game extends React.Component {
     let nextPlayerId = Math.floor(Math.random() * this.state.players.length);
 
     let players = this.state.players.slice();
-    players.forEach(player => player.drownedLastRound = false);
+    players.forEach((player) => (player.drownedLastRound = false));
     players[nextPlayerId].isCurrentTurn = true;
 
     this.setState({
       gameState: "playing",
       currentPlayerId: nextPlayerId,
-      players: players
+      players: players,
     });
   }
 
@@ -713,11 +757,10 @@ class Game extends React.Component {
 
   endRound() {
     let players = this.state.players.slice();
-    let availablePlunder = this.state.availablePlunder;
+    let availablePlunder = Object.assign({}, this.state.availablePlunder);
 
     // Reset players and add money
     for (let player of players) {
-
       // Drown the player if they didn't make it back to the submarine
       if (!player.finished) {
         player.drownedLastRound = true;
@@ -759,9 +802,11 @@ class Game extends React.Component {
 
     // Remove plundered rune chips
     let chips = this.state.chips.slice();
-    for (let [index, chip] of chips.entries()) {
+    for (let i = chips.length - 1; i >= 0; i--) {
+      let chip = chips[i];
+      chip.player = null;
       if (chip.plundered) {
-        chips.splice(index, 1);
+        chips.splice(i, 1);
       }
     }
 
@@ -783,6 +828,7 @@ class Game extends React.Component {
       players: players,
       round: round,
       chips: chips,
+      availablePlunder: availablePlunder
     });
   }
 
