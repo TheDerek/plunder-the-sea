@@ -16,23 +16,26 @@ function Chip(props) {
     playerElement = <div className={playerElementLevel}></div>;
   }
 
-  let levelText = "";
-
-  if (props.plundered) {
-    levelText = "Plundered";
-  } else {
-    for (let i = 0; i < props.levels[0]; i++) {
-      levelText += "•";
+  const levelElements = props.levels.map(level => {
+    let levelText = "";
+    if (props.plundered) {
+      levelText = "Plundered";
+    } else {
+      for (let i = 0; i < level; i++) {
+        levelText += "•";
+      }
     }
-  }
+    let levelClass =
+      "chip-level chip-level-" +
+      (props.plundered ? "plundered" : level);
 
-  let levelClass =
-    "chip-level chip-level-" +
-    (props.plundered ? "plundered" : props.levels[0]);
+      return <div className={levelClass}>{levelText}</div>;
+  });
+
 
   return (
     <div className="chip">
-      <div className={levelClass}>{levelText}</div>
+      {levelElements}
       {playerElement}
     </div>
   );
@@ -86,7 +89,7 @@ function Plunder(props) {
     plunderText += "•";
   }
 
-  let className = "plunder chip-level-" + props.levels[0]
+  let className = "plunder chip-level-" + props.levels[0];
 
   return <div className={className}>{plunderText}</div>;
 }
@@ -795,11 +798,12 @@ class Game extends React.Component {
 
   endRound() {
     let players = this.state.players.slice();
+    let chips = this.state.chips.slice();
     let availablePlunder = Object.assign({}, this.state.availablePlunder);
+    let droppedPlunder = [];
 
     // Reset players and add money
     for (let player of players) {
-      
       // Give the player money if they managed to finish
       if (player.finished) {
         // Turn plunder into money
@@ -827,9 +831,24 @@ class Game extends React.Component {
       } else {
         // Drown the player if they didn't make it back to the submarine
         player.drownedLastRound = true;
+
+        // Their plunder drops to the bottom of the ocean
+        for (const plunderCollection of player.plunder) {
+          for (const plunder of plunderCollection) {
+            // Stack the chips in sets of 3
+            if (
+              droppedPlunder.length === 0 ||
+              droppedPlunder[droppedPlunder.length - 1].length === 3
+            ) {
+              droppedPlunder.push([]);
+            }
+
+            droppedPlunder[droppedPlunder.length - 1].push(plunder);
+          }
+        }
       }
 
-      // Reset players
+      // Reset player
       player.plunder = [];
       player.position = -1;
       player.hasTurnedBack = false;
@@ -840,13 +859,21 @@ class Game extends React.Component {
     }
 
     // Remove plundered rune chips
-    let chips = this.state.chips.slice();
     for (let i = chips.length - 1; i >= 0; i--) {
       let chip = chips[i];
       chip.player = null;
       if (chip.plundered) {
         chips.splice(i, 1);
       }
+    }
+
+    // Add dropped plunder to the bottom of the ocean
+    for (const dropped of droppedPlunder) {
+      chips.push({
+        levels: dropped,
+        plundered: false,
+        position: chips.length
+      })
     }
 
     // Reset the air
