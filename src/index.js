@@ -17,13 +17,13 @@ function Chip(props) {
   if (props.plundered) {
     levelText = "Plundered";
   } else {
-    for (let i = 0; i < props.level; i++) {
+    for (let i = 0; i < props.levels[0]; i++) {
       levelText += "•";
     }
   }
 
   let levelClass =
-    "chip-level chip-level-" + (props.plundered ? "plundered" : props.level);
+    "chip-level chip-level-" + (props.plundered ? "plundered" : props.levels[0]);
 
   return (
     <div className="chip">
@@ -520,7 +520,7 @@ class Game extends React.Component {
       React.createElement(Chip, {
         key: index,
         position: index + 1,
-        level: chip.level,
+        levels: chip.levels,
         player: chip.player,
         plundered: chip.plundered,
       })
@@ -548,7 +548,7 @@ class Game extends React.Component {
         <div className="chips">{chipsElements}</div>
         <GameControl
           gameState={this.state.gameState}
-          ADdPlayerCallBack={this.handleAddPlayer.bind(this)}
+          addPlayerCallBack={this.handleAddPlayer.bind(this)}
           startGameCallBack={this.handleStartGame.bind(this)}
           currentPlayer={currentPlayer}
           currentChip={currentChip}
@@ -575,7 +575,7 @@ class Game extends React.Component {
     for (let l of levels) {
       for (var i = 0; i < 8; i++) {
         chips.push({
-          level: l,
+          levels: [l],
           player: null,
           plundered: false,
         });
