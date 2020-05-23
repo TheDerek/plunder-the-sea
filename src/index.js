@@ -12,19 +12,17 @@ function Chip(props) {
     playerElement = <div className="chip-player"></div>;
   }
 
-  let chipStatus = "chip-status ";
-  chipStatus += props.plundered
-    ? "chip-status-plundered"
-    : "chip-status-unplundered";
-
-  let plunderStatus = props.plundered ? "Plundered" : "Unplundered";
-
   let levelText = "";
+
+  if (props.plundered) {
+    levelText = "Plundered"
+  } else {
   for (let i = 0; i < props.level; i++) {
     levelText += "•";
   }
+  }
 
-  let levelClass = "chip-level chip-level-" + props.level;
+  let levelClass = "chip-level chip-level-" + (props.plundered ? "plundered" :  props.level);
 
   return (
     <div className="chip">
