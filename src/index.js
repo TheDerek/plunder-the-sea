@@ -799,41 +799,42 @@ class Game extends React.Component {
 
     // Reset players and add money
     for (let player of players) {
-      // Drown the player if they didn't make it back to the submarine
-      if (!player.finished) {
+      
+      // Give the player money if they managed to finish
+      if (player.finished) {
+        // Turn plunder into money
+        player.spentPlunder = player.plunder.map((plunder) => {
+          // plunder is either 1, 2 or 3
+
+          // Get a random item of plunder corresponding to the level
+          // of plunder the player is holding
+          let plunderForLevel = availablePlunder[plunder];
+
+          // Remove the plunder from the global store and add it to the
+          // players wealth
+          let value = plunderForLevel.splice(
+            Math.floor(Math.random() * plunderForLevel.length),
+            1
+          )[0];
+
+          player.money += value;
+
+          return {
+            level: plunder,
+            value: value,
+          };
+        });
+      } else {
+        // Drown the player if they didn't make it back to the submarine
         player.drownedLastRound = true;
       }
 
       // Reset players
+      player.plunder = [];
       player.position = -1;
       player.hasTurnedBack = false;
       player.willTurnBack = false;
       player.finished = false;
-
-      // Turn plunder into money
-      player.spentPlunder = player.plunder.map((plunder) => {
-        // plunder is either 1, 2 or 3
-
-        // Get a random item of plunder corresponding to the level
-        // of plunder the player is holding
-        let plunderForLevel = availablePlunder[plunder];
-
-        // Remove the plunder from the global store and add it to the
-        // players wealth
-        let value = plunderForLevel.splice(
-          Math.floor(Math.random() * plunderForLevel.length),
-          1
-        )[0];
-
-        player.money += value;
-
-        return {
-          level: plunder,
-          value: value,
-        };
-      });
-
-      player.plunder = [];
 
       console.log("Players new money is " + player.money);
     }
