@@ -15,14 +15,15 @@ function Chip(props) {
   let levelText = "";
 
   if (props.plundered) {
-    levelText = "Plundered"
+    levelText = "Plundered";
   } else {
-  for (let i = 0; i < props.level; i++) {
-    levelText += "•";
-  }
+    for (let i = 0; i < props.level; i++) {
+      levelText += "•";
+    }
   }
 
-  let levelClass = "chip-level chip-level-" + (props.plundered ? "plundered" :  props.level);
+  let levelClass =
+    "chip-level chip-level-" + (props.plundered ? "plundered" : props.level);
 
   return (
     <div className="chip">
@@ -272,7 +273,8 @@ class GameControl extends React.Component {
               before they drowned.
             </p>
             <p>
-              Because of this their gains for the expedition remain <b>£{player.money}</b>.
+              Because of this their gains for the expedition remain{" "}
+              <b>£{player.money}</b>.
             </p>
           </li>
         );
@@ -331,7 +333,11 @@ class GameControl extends React.Component {
 
   renderMoved() {
     let player = this.props.currentPlayer;
-    let plunderChip = null;
+    let canPlunder = !this.props.currentChip.plundered && !player.performedTurnAction;
+    let canDrop = 
+      this.props.currentChip.plundered &&
+      player.plunder.length > 0 &&
+      !player.performedTurnAction;
 
     if (player.finished) {
       return (
@@ -355,14 +361,13 @@ class GameControl extends React.Component {
             {getName(player)} has moved to chip {player.position + 1} !
           </p>
           <button
-            disabled={this.props.currentChip.plundered}
+            disabled={!canPlunder}
             onClick={this.props.plunder}
           >
             Plunder current location
           </button>
-          { /* TODO: Implement dropping plunder */}
           <button
-            disabled={!this.props.currentChip.plundered || player.plunder.length === 0}
+            disabled={!canDrop}
             onClick={this.props.dropPlunder}
           >
             Drop plunder
@@ -543,7 +548,7 @@ class Game extends React.Component {
         <div className="chips">{chipsElements}</div>
         <GameControl
           gameState={this.state.gameState}
-          addPlayerCallBack={this.handleAddPlayer.bind(this)}
+          ADdPlayerCallBack={this.handleAddPlayer.bind(this)}
           startGameCallBack={this.handleStartGame.bind(this)}
           currentPlayer={currentPlayer}
           currentChip={currentChip}
@@ -556,6 +561,7 @@ class Game extends React.Component {
           round={this.state.round}
           air={this.state.air}
           players={this.state.players}
+          dropPlunder={this.dropPlunder.bind(this)}
         />
         <Players players={this.state.players} />
       </div>
@@ -594,6 +600,7 @@ class Game extends React.Component {
           finished: false,
           money: 0,
           drownedLastRound: false,
+          performedTurnAction: false,
         },
       ]),
     });
@@ -630,8 +637,7 @@ class Game extends React.Component {
     let spacesLeftToMove = this.state.rolled.actual;
     let movingBack = player.hasTurnedBack;
 
-    if (spacesLeftToMove !== 0)
-    {
+    if (spacesLeftToMove !== 0) {
       // Remove the player from the chip they started on
       if (player.position >= 0) {
         chips[player.position].player = null;
@@ -696,6 +702,22 @@ class Game extends React.Component {
     }
   }
 
+  dropPlunder() {
+    let players = this.state.players.slice();
+    let player = players[this.state.currentPlayerId];
+    let chips = this.state.chips.slice();
+    let chip = chips[player.position];
+
+    player.performedTurnAction = true;
+    chip.level = player.plunder.splice(0, 1);
+    chip.plundered = false;
+
+    this.setState({
+      players: players,
+      chips: chips
+    });
+  }
+
   handleStartGame() {
     // Randomly choose the first player
     let nextPlayerId = Math.floor(Math.random() * this.state.players.length);
@@ -720,6 +742,7 @@ class Game extends React.Component {
 
     chip.plundered = true;
     player.plunder.push(chip.level);
+    player.performedTurnAction = true;
 
     this.setState({
       chips: chips,
@@ -743,6 +766,7 @@ class Game extends React.Component {
 
     let currentPlayer = players[this.state.currentPlayerId];
     currentPlayer.isCurrentTurn = false;
+    currentPlayer.performedTurnAction = false;
     if (currentPlayer.willTurnBack) {
       currentPlayer.hasTurnedBack = true;
     }
