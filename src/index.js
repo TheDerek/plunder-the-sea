@@ -6,10 +6,14 @@ import { config } from "./config.js";
 
 function Chip(props) {
   let playerElement = null;
+  let playerElementLevel =
+    "chip-player chip-player-" + (props.plundered ? "1" : props.levels.length);
   if (props.player) {
-    playerElement = <div className="chip-player">{getName(props.player)}</div>;
+    playerElement = (
+      <div className={playerElementLevel}>{getName(props.player)}</div>
+    );
   } else {
-    playerElement = <div className="chip-player"></div>;
+    playerElement = <div className={playerElementLevel}></div>;
   }
 
   let levelText = "";
@@ -23,7 +27,8 @@ function Chip(props) {
   }
 
   let levelClass =
-    "chip-level chip-level-" + (props.plundered ? "plundered" : props.levels[0]);
+    "chip-level chip-level-" +
+    (props.plundered ? "plundered" : props.levels[0]);
 
   return (
     <div className="chip">
@@ -77,18 +82,18 @@ class AddPlayerForm extends React.Component {
 
 function Plunder(props) {
   let plunderText = "";
-  for (let i = 0; i < props.level; i++) {
+  for (let i = 0; i < props.levels[0]; i++) {
     plunderText += "•";
   }
 
-  let className = "plunder chip-level-" + props.level;
+  let className = "plunder chip-level-" + props.levels[0]
 
   return <div className={className}>{plunderText}</div>;
 }
 
 function PlayerPlunder(props) {
   let plunderItems = props.plunder.map((item, index) =>
-    React.createElement(Plunder, { key: index, level: item })
+    React.createElement(Plunder, { key: index, levels: item })
   );
 
   return <div className="stat-value">{plunderItems}</div>;
@@ -333,8 +338,9 @@ class GameControl extends React.Component {
 
   renderMoved() {
     let player = this.props.currentPlayer;
-    let canPlunder = !this.props.currentChip.plundered && !player.performedTurnAction;
-    let canDrop = 
+    let canPlunder =
+      !this.props.currentChip.plundered && !player.performedTurnAction;
+    let canDrop =
       this.props.currentChip.plundered &&
       player.plunder.length > 0 &&
       !player.performedTurnAction;
@@ -360,16 +366,10 @@ class GameControl extends React.Component {
           <p>
             {getName(player)} has moved to chip {player.position + 1} !
           </p>
-          <button
-            disabled={!canPlunder}
-            onClick={this.props.plunder}
-          >
+          <button disabled={!canPlunder} onClick={this.props.plunder}>
             Plunder current location
           </button>
-          <button
-            disabled={!canDrop}
-            onClick={this.props.dropPlunder}
-          >
+          <button disabled={!canDrop} onClick={this.props.dropPlunder}>
             Drop plunder
           </button>
           <button onClick={this.props.endTurn}>End turn</button>
@@ -714,7 +714,7 @@ class Game extends React.Component {
 
     this.setState({
       players: players,
-      chips: chips
+      chips: chips,
     });
   }
 
@@ -741,7 +741,7 @@ class Game extends React.Component {
     let chip = chips[player.position];
 
     chip.plundered = true;
-    player.plunder.push(chip.level);
+    player.plunder.push(chip.levels);
     player.performedTurnAction = true;
 
     this.setState({
