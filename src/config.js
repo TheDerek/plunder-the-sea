@@ -1,4 +1,4 @@
 export const config = {
-  loadPreviousState: false,
-  exampleState: "outOfAirState"
+  loadPreviousState: true,
+  exampleState: null
 }

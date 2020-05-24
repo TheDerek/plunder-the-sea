@@ -122,6 +122,18 @@ header {
   border-radius: 5px;
 }
 
+.plunder-collection:not(:last-child) {
+    margin-right: 5px;
+}
+
+.plunder-collection:before {
+    content: "(";
+}
+
+.plunder-collection:after {
+    content: ")";
+}
+
 .players {
   float: right;
   min-width: 50%;

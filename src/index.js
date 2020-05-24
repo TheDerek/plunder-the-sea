@@ -6,6 +6,7 @@ import { config } from "./config.js";
 
 function Chip(props) {
   let playerElement = null;
+  let levels = props.levels.slice();
   let playerElementLevel =
     "chip-player chip-player-" + (props.plundered ? "1" : props.levels.length);
   if (props.player) {
@@ -16,7 +17,11 @@ function Chip(props) {
     playerElement = <div className={playerElementLevel}></div>;
   }
 
-  const levelElements = props.levels.map(level => {
+  // Hack to display only one title bar if the tile is plundered
+  if (props.plundered) {
+    levels = props.levels.slice(0, 1);
+  }
+  const levelElements = levels.map((level) => {
     let levelText = "";
     if (props.plundered) {
       levelText = "Plundered";
@@ -26,12 +31,10 @@ function Chip(props) {
       }
     }
     let levelClass =
-      "chip-level chip-level-" +
-      (props.plundered ? "plundered" : level);
+      "chip-level chip-level-" + (props.plundered ? "plundered" : level);
 
-      return <div className={levelClass}>{levelText}</div>;
+    return <div className={levelClass}>{levelText}</div>;
   });
-
 
   return (
     <div className="chip">
@@ -85,19 +88,23 @@ class AddPlayerForm extends React.Component {
 
 function Plunder(props) {
   let plunderText = "";
-  for (let i = 0; i < props.levels[0]; i++) {
+  for (let i = 0; i < props.level; i++) {
     plunderText += "•";
   }
 
-  let className = "plunder chip-level-" + props.levels[0];
+  let className = "plunder chip-level-" + props.level;
 
   return <div className={className}>{plunderText}</div>;
 }
 
 function PlayerPlunder(props) {
-  let plunderItems = props.plunder.map((item, index) =>
-    React.createElement(Plunder, { key: index, levels: item })
-  );
+  let plunderItems = props.plunder.map((item, index1) => (
+    <span key={index1} class={item.length > 1 ? "plunder-collection": ""}>
+      {item.map((level, index2) => {
+          return <Plunder key={`${index1}-${index2}`} level={level} />;
+      })}
+    </span>
+  ));
 
   return <div className="stat-value">{plunderItems}</div>;
 }
@@ -578,7 +585,7 @@ class Game extends React.Component {
     for (let l of levels) {
       for (var i = 0; i < 8; i++) {
         chips.push({
-          levels: [l],
+          levels: [l, l],
           player: null,
           plundered: false,
         });
@@ -872,8 +879,8 @@ class Game extends React.Component {
       chips.push({
         levels: dropped,
         plundered: false,
-        position: chips.length
-      })
+        position: chips.length,
+      });
     }
 
     // Reset the air
