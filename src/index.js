@@ -585,7 +585,7 @@ class Game extends React.Component {
     for (let l of levels) {
       for (var i = 0; i < 8; i++) {
         chips.push({
-          levels: [l, l],
+          levels: [l],
           player: null,
           plundered: false,
         });
@@ -668,7 +668,23 @@ class Game extends React.Component {
   }
 
   movePlayerForwards(player, chips, spacesLeftToMove) {
-    for (let i = player.position + 1; i < chips.length; i++) {
+    for (let i = player.position + 1; ; i++) {
+      if (i >= chips.length -1) {
+        // Walk backwards from the end and place the player on the closest
+        // non-occupied spot
+        for (let j = chips.length - 1; j >= 0; j--) {
+          let chip = chips[j];
+          
+          if (chip.player) {
+            continue;
+          }
+
+          player.position = j;
+          chips[j].player = player;
+          return;
+        }
+      }
+
       let chip = chips[i];
 
       // Skip this chip if someone is on it
@@ -678,10 +694,11 @@ class Game extends React.Component {
 
       spacesLeftToMove -= 1;
 
+
       if (spacesLeftToMove === 0) {
         player.position = i;
         chip.player = player;
-        break;
+        return;
       }
     }
   }
