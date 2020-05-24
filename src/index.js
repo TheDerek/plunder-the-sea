@@ -814,7 +814,7 @@ class Game extends React.Component {
       // Give the player money if they managed to finish
       if (player.finished) {
         // Turn plunder into money
-        player.spentPlunder = player.plunder.map((plunder) => {
+        player.spentPlunder = [].concat.apply([], player.plunder).map((plunder) => {
           // plunder is either 1, 2 or 3
 
           // Get a random item of plunder corresponding to the level
