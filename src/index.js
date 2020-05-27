@@ -749,7 +749,7 @@ class Game extends React.Component {
       let chip = chips[player.position];
 
       player.performedTurnAction = true;
-      chip.level = player.plunder.splice(plunderIndex, 1);
+      chip.levels = player.plunder.splice(plunderIndex, 1);
       chip.plundered = false;
 
       this.setState({
