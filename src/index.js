@@ -99,9 +99,9 @@ function Plunder(props) {
 
 function PlayerPlunder(props) {
   let plunderItems = props.plunder.map((item, index1) => (
-    <span key={index1} class={item.length > 1 ? "plunder-collection": ""}>
+    <span key={index1} class={item.length > 1 ? "plunder-collection" : ""}>
       {item.map((level, index2) => {
-          return <Plunder key={`${index1}-${index2}`} level={level} />;
+        return <Plunder key={`${index1}-${index2}`} level={level} />;
       })}
     </span>
   ));
@@ -369,6 +369,21 @@ class GameControl extends React.Component {
       );
     }
 
+    let dropPlunder = null;
+    if (canDrop) {
+      dropPlunder = player.plunder.map((plunder, index) => (
+        <button
+          key={index}
+          disabled={!canDrop}
+          onClick={this.props.dropPlunder(index)}
+        >
+          Drop plunder
+          &nbsp;
+          <PlayerPlunder plunder={[plunder]} />
+        </button>
+      ));
+    }
+
     return (
       <div className="content-box">
         <div className="box-title">💰 Commence plundering</div>
@@ -379,9 +394,7 @@ class GameControl extends React.Component {
           <button disabled={!canPlunder} onClick={this.props.plunder}>
             Plunder current location
           </button>
-          <button disabled={!canDrop} onClick={this.props.dropPlunder}>
-            Drop plunder
-          </button>
+          {dropPlunder}
           <button onClick={this.props.endTurn}>End turn</button>
         </div>
       </div>
@@ -669,12 +682,12 @@ class Game extends React.Component {
 
   movePlayerForwards(player, chips, spacesLeftToMove) {
     for (let i = player.position + 1; ; i++) {
-      if (i >= chips.length -1) {
+      if (i >= chips.length - 1) {
         // Walk backwards from the end and place the player on the closest
         // non-occupied spot
         for (let j = chips.length - 1; j >= 0; j--) {
           let chip = chips[j];
-          
+
           if (chip.player) {
             continue;
           }
@@ -693,7 +706,6 @@ class Game extends React.Component {
       }
 
       spacesLeftToMove -= 1;
-
 
       if (spacesLeftToMove === 0) {
         player.position = i;
@@ -729,20 +741,22 @@ class Game extends React.Component {
     }
   }
 
-  dropPlunder() {
-    let players = this.state.players.slice();
-    let player = players[this.state.currentPlayerId];
-    let chips = this.state.chips.slice();
-    let chip = chips[player.position];
+  dropPlunder(plunderIndex) {
+    return () => {
+      let players = this.state.players.slice();
+      let player = players[this.state.currentPlayerId];
+      let chips = this.state.chips.slice();
+      let chip = chips[player.position];
 
-    player.performedTurnAction = true;
-    chip.level = player.plunder.splice(0, 1);
-    chip.plundered = false;
+      player.performedTurnAction = true;
+      chip.level = player.plunder.splice(plunderIndex, 1);
+      chip.plundered = false;
 
-    this.setState({
-      players: players,
-      chips: chips,
-    });
+      this.setState({
+        players: players,
+        chips: chips,
+      });
+    };
   }
 
   handleStartGame() {
@@ -831,27 +845,29 @@ class Game extends React.Component {
       // Give the player money if they managed to finish
       if (player.finished) {
         // Turn plunder into money
-        player.spentPlunder = [].concat.apply([], player.plunder).map((plunder) => {
-          // plunder is either 1, 2 or 3
+        player.spentPlunder = [].concat
+          .apply([], player.plunder)
+          .map((plunder) => {
+            // plunder is either 1, 2 or 3
 
-          // Get a random item of plunder corresponding to the level
-          // of plunder the player is holding
-          let plunderForLevel = availablePlunder[plunder];
+            // Get a random item of plunder corresponding to the level
+            // of plunder the player is holding
+            let plunderForLevel = availablePlunder[plunder];
 
-          // Remove the plunder from the global store and add it to the
-          // players wealth
-          let value = plunderForLevel.splice(
-            Math.floor(Math.random() * plunderForLevel.length),
-            1
-          )[0];
+            // Remove the plunder from the global store and add it to the
+            // players wealth
+            let value = plunderForLevel.splice(
+              Math.floor(Math.random() * plunderForLevel.length),
+              1
+            )[0];
 
-          player.money += value;
+            player.money += value;
 
-          return {
-            level: plunder,
-            value: value,
-          };
-        });
+            return {
+              level: plunder,
+              value: value,
+            };
+          });
       } else {
         // Drown the player if they didn't make it back to the submarine
         player.drownedLastRound = true;
