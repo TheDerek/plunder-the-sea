@@ -339,7 +339,7 @@ class GameControl extends React.Component {
     }
     else 
     {
-      button = <button onClick={this.props.endGame}>Next round</button>
+      button = <button onClick={this.props.endGame}>End game</button>
     }
 
     return (
@@ -350,6 +350,7 @@ class GameControl extends React.Component {
         </div>
         <div className="box-content">
           <ul>{results}</ul>
+          {button}
         </div>
       </div>
     );

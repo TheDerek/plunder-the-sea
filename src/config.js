@@ -1,4 +1,4 @@
 export const config = {
-  loadPreviousState: true,
-  exampleState: "endOfChipsState"
+    loadPreviousState: false,
+    exampleState: "endGameState"
 }
