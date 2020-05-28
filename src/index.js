@@ -331,6 +331,16 @@ class GameControl extends React.Component {
         </li>
       );
     });
+    
+    let button;
+    if (this.props.round.current < this.props.round.max)
+    {
+      button = <button onClick={this.props.startGameCallBack}>Next round</button>
+    }
+    else 
+    {
+      button = <button onClick={this.props.endGame}>Next round</button>
+    }
 
     return (
       <div className="content-box">
@@ -340,7 +350,6 @@ class GameControl extends React.Component {
         </div>
         <div className="box-content">
           <ul>{results}</ul>
-          <button onClick={this.props.startGameCallBack}>Next round</button>
         </div>
       </div>
     );
@@ -580,6 +589,7 @@ class Game extends React.Component {
           movePlayer={this.movePlayer.bind(this)}
           plunder={this.plunder.bind(this)}
           endTurn={this.endTurn.bind(this)}
+          endGame={this.endGame.bind(this)}
           turnBackPlayer={this.turnBackPlayer.bind(this)}
           round={this.state.round}
           air={this.state.air}
@@ -936,6 +946,10 @@ class Game extends React.Component {
       chips: chips,
       availablePlunder: availablePlunder,
     });
+  }
+
+  endGame() {
+
   }
 
   getNextPlayerId(currentPlayerId) {
