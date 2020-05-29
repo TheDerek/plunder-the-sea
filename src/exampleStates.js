@@ -190,7 +190,7 @@ export const exampleStates = {
       {
         index: 2,
         name: "Mike",
-        position: 1,
+        position: 2,
         isCurrentTurn: true,
         plunder: [],
         willTurnBack: true,
@@ -594,7 +594,7 @@ export const exampleStates = {
         "willTurnBack": false,
         "hasTurnedBack": false,
         "finished": false,
-        "money": 0,
+        "money": 100,
         "drownedLastRound": false,
         "performedTurnAction": false
       },
@@ -610,7 +610,7 @@ export const exampleStates = {
         "willTurnBack": false,
         "hasTurnedBack": false,
         "finished": false,
-        "money": 0,
+        "money": 10,
         "drownedLastRound": false,
         "performedTurnAction": false
       },
@@ -677,7 +677,7 @@ export const exampleStates = {
       "willTurnBack": false,
       "hasTurnedBack": false,
       "finished": false,
-      "money": 0,
+      "money": 100,
       "drownedLastRound": false,
       "performedTurnAction": false
     },
@@ -690,10 +690,37 @@ export const exampleStates = {
       "willTurnBack": false,
       "hasTurnedBack": false,
       "finished": false,
-      "money": 0,
+      "money": 50,
       "drownedLastRound": false,
       "performedTurnAction": false
-    }],
+    },
+    {
+      "index": 2,
+      "name": "Peter Parker",
+      "position": 4,
+      "isCurrentTurn": true,
+      "plunder": [[1]],
+      "willTurnBack": false,
+      "hasTurnedBack": false,
+      "finished": false,
+      "money": 50,
+      "drownedLastRound": false,
+      "performedTurnAction": false
+    },
+      {
+        "index": 3,
+        "name": "Peter Porker",
+        "position": 4,
+        "isCurrentTurn": true,
+        "plunder": [[1]],
+        "willTurnBack": false,
+        "hasTurnedBack": false,
+        "finished": false,
+        "money": 110,
+        "drownedLastRound": false,
+        "performedTurnAction": false
+      }
+    ],
     "gameState": "playing",
     "currentPlayerId": 1,
     "rolled": {"total": 2, "reducedBy": 1, "actual": 1},

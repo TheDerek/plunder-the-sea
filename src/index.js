@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import { exampleStates } from "./exampleStates.js";
-import { config } from "./config.js";
+import {exampleStates} from "./exampleStates.js";
+import {config} from "./config.js";
 
 function Chip(props) {
   let playerElement = null;
@@ -21,7 +21,7 @@ function Chip(props) {
   if (props.plundered) {
     levels = props.levels.slice(0, 1);
   }
-  const levelElements = levels.map((level) => {
+  const levelElements = levels.map((level, index) => {
     let levelText = "";
     if (props.plundered) {
       levelText = "Plundered";
@@ -33,7 +33,11 @@ function Chip(props) {
     let levelClass =
       "chip-level chip-level-" + (props.plundered ? "plundered" : level);
 
-    return <div className={levelClass}>{levelText}</div>;
+    return (
+      <div key={index} className={levelClass}>
+        {levelText}
+      </div>
+    );
   });
 
   return (
@@ -47,14 +51,14 @@ function Chip(props) {
 class AddPlayerForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    this.state = {value: ""};
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit(props.callBack).bind(this);
   }
 
   handleChange(event) {
-    this.setState({ value: event.target.value });
+    this.setState({value: event.target.value});
   }
 
   handleSubmit(parentCallBack) {
@@ -62,7 +66,7 @@ class AddPlayerForm extends React.Component {
       event.preventDefault();
       parentCallBack(this.state.value);
 
-      this.setState({ value: "" });
+      this.setState({value: ""});
     };
   }
 
@@ -79,7 +83,7 @@ class AddPlayerForm extends React.Component {
             value={this.state.value}
             onChange={this.handleChange}
           />
-          <input type="submit" value="Add player to game" />
+          <input type="submit" value="Add player to game"/>
         </form>
       </div>
     );
@@ -99,9 +103,9 @@ function Plunder(props) {
 
 function PlayerPlunder(props) {
   let plunderItems = props.plunder.map((item, index1) => (
-    <span key={index1} class={item.length > 1 ? "plunder-collection" : ""}>
+    <span key={index1} className={item.length > 1 ? "plunder-collection" : ""}>
       {item.map((level, index2) => {
-        return <Plunder key={`${index1}-${index2}`} level={level} />;
+        return <Plunder key={`${index1}-${index2}`} level={level}/>;
       })}
     </span>
   ));
@@ -130,7 +134,7 @@ function Player(props) {
   return (
     <div className={playerClass}>
       <div className="stat-title">{getName(props.player)}</div>
-      <PlayerPlunder plunder={props.player.plunder} />
+      <PlayerPlunder plunder={props.player.plunder}/>
       <div className={endClass}>£{props.player.money}</div>
     </div>
   );
@@ -139,7 +143,7 @@ function Player(props) {
 function Players(props) {
   let players = props.players;
   let playerItems = players.map((player, index) =>
-    React.createElement(Player, { key: index, player: player })
+    React.createElement(Player, {key: index, player: player})
   );
   return (
     <div className="players">
@@ -159,7 +163,7 @@ class GameControl extends React.Component {
   renderAddPlayers() {
     return (
       <div>
-        <AddPlayerForm callBack={this.props.addPlayerCallBack} />
+        <AddPlayerForm callBack={this.props.addPlayerCallBack}/>
         <button
           className="start-game-button"
           onClick={this.props.startGameCallBack}
@@ -222,7 +226,7 @@ class GameControl extends React.Component {
   }
 
   getRolledText(rolled, player) {
-    if (rolled.reducedBy == 0) {
+    if (rolled.reducedBy === 0) {
       return (
         <p>
           {player.name} rolled a <b>{rolled.actual}</b>.
@@ -233,7 +237,7 @@ class GameControl extends React.Component {
     let plunderCount = player.plunder.length;
     let items = plunderCount > 1 ? `${plunderCount} items` : "1 item";
 
-    if (rolled.actual == 0) {
+    if (rolled.actual === 0) {
       return (
         <p>
           {player.name} rolled a {rolled.total}. However by being exceptionally
@@ -331,15 +335,14 @@ class GameControl extends React.Component {
         </li>
       );
     });
-    
+
     let button;
-    if (this.props.round.current < this.props.round.max)
-    {
-      button = <button onClick={this.props.startGameCallBack}>Next round</button>
-    }
-    else 
-    {
-      button = <button onClick={this.props.endGame}>End game</button>
+    if (this.props.round.current < this.props.round.max) {
+      button = (
+        <button onClick={this.props.startGameCallBack}>Next round</button>
+      );
+    } else {
+      button = <button onClick={this.props.endGame}>End game</button>;
     }
 
     return (
@@ -387,9 +390,8 @@ class GameControl extends React.Component {
           disabled={!canDrop}
           onClick={this.props.dropPlunder(index)}
         >
-          Drop plunder
-          &nbsp;
-          <PlayerPlunder plunder={[plunder]} />
+          Drop plunder &nbsp;
+          <PlayerPlunder plunder={[plunder]}/>
         </button>
       ));
     }
@@ -409,6 +411,32 @@ class GameControl extends React.Component {
         </div>
       </div>
     );
+  }
+
+  renderGameOver() {
+    return (
+      <div className="content-box">
+        <div className="box-title">Game over</div>
+        <div className="box-content">
+          <ol>
+            {
+              this.props.gameEndScore.map((score) => (
+                <li key={score}>
+                  {score.players.join(", ")} with £{score.money}
+                </li>
+              ))
+            }
+          </ol>
+          <p>Thanks for playing!</p>
+          <button onClick={this.props.restartGame(true)}>
+            Restart the game with the <b>same players</b>
+          </button>
+          <button onClick={this.props.restartGame(false)}>
+            Restart the game with <b>new players</b>
+          </button>
+        </div>
+      </div>
+    )
   }
 
   render() {
@@ -434,11 +462,12 @@ class GameControl extends React.Component {
       stateRender = this.renderRoundOver();
     }
 
+    if (this.props.gameState === "gameOver") {
+      stateRender = this.renderGameOver();
+    }
+
     let stats = null;
-    if (
-      this.props.gameState !== "pregame" &&
-      this.props.gameState !== "roundOver"
-    ) {
+    if (!["pregame", "roundOver", "gameOver"].includes(this.props.gameState)) {
       stats = (
         <div className="stats">
           <div className="stat">
@@ -484,20 +513,42 @@ class Game extends React.Component {
     } else if (config.exampleState) {
       this.state = exampleStates[config.exampleState];
     } else {
-      this.state = {
-        chips: this.createChips(),
-        players: [],
-        gameState: "pregame",
-        currentPlayerId: null,
-        rolled: null,
-        air: { current: 25, max: 25 },
-        round: { current: 1, max: 3 },
-        availablePlunder: this.generateAvailablePlunder(),
-      };
+      this.state = this.getStartGameState();
     }
   }
 
-  setState(newState, callback = () => {}) {
+  getStartGameState() {
+    return {
+      chips: this.createChips(),
+      players: [],
+      gameState: "pregame",
+      currentPlayerId: null,
+      rolled: null,
+      air: {current: 25, max: 25},
+      round: {current: 1, max: 3},
+      availablePlunder: this.generateAvailablePlunder(),
+      gameEndScore: null,
+    };
+  }
+
+  restartGame(samePlayers) {
+    const newState = this.getStartGameState();
+
+    if (samePlayers) {
+      const players = this.state.players.splice();
+
+      // Reset the money of each player
+      players.forEach(player => player.money = 0);
+      newState.players = players;
+    }
+
+    return () => {
+      this.setState(newState);
+    }
+  }
+
+  setState(newState, callback = () => {
+  }) {
     super.setState(newState, () => {
       callback();
 
@@ -505,8 +556,8 @@ class Game extends React.Component {
       localStorage.setItem("gameState", stringState);
       console.log(
         "Saved " +
-          Buffer.byteLength(stringState) +
-          " bytes of memory to local storage"
+        Buffer.byteLength(stringState) +
+        " bytes of memory to local storage"
       );
     });
   }
@@ -514,10 +565,10 @@ class Game extends React.Component {
   generateAvailablePlunder() {
     let amountPerValue = 2;
     let levels = {
-      1: { min: 0, max: 3 },
-      2: { min: 4, max: 7 },
-      3: { min: 8, max: 11 },
-      4: { min: 12, max: 15 },
+      1: {min: 0, max: 3},
+      2: {min: 4, max: 7},
+      3: {min: 8, max: 11},
+      4: {min: 12, max: 15},
     };
 
     let plunder = {};
@@ -596,8 +647,10 @@ class Game extends React.Component {
           air={this.state.air}
           players={this.state.players}
           dropPlunder={this.dropPlunder.bind(this)}
+          gameEndScore={this.state.gameEndScore}
+          restartGame={this.restartGame.bind(this)}
         />
-        <Players players={this.state.players} />
+        <Players players={this.state.players}/>
       </div>
     );
   }
@@ -856,29 +909,27 @@ class Game extends React.Component {
       // Give the player money if they managed to finish
       if (player.finished) {
         // Turn plunder into money
-        player.spentPlunder = [].concat
-          .apply([], player.plunder)
-          .map((plunder) => {
-            // plunder is either 1, 2 or 3
+        player.spentPlunder = [].concat.apply([], player.plunder).map((plunder) => {
+          // plunder is either 1, 2 or 3
 
-            // Get a random item of plunder corresponding to the level
-            // of plunder the player is holding
-            let plunderForLevel = availablePlunder[plunder];
+          // Get a random item of plunder corresponding to the level
+          // of plunder the player is holding
+          let plunderForLevel = availablePlunder[plunder];
 
-            // Remove the plunder from the global store and add it to the
-            // players wealth
-            let value = plunderForLevel.splice(
-              Math.floor(Math.random() * plunderForLevel.length),
-              1
-            )[0];
+          // Remove the plunder from the global store and add it to the
+          // players wealth
+          let value = plunderForLevel.splice(
+            Math.floor(Math.random() * plunderForLevel.length),
+            1
+          )[0];
 
-            player.money += value;
+          player.money += value;
 
-            return {
-              level: plunder,
-              value: value,
-            };
-          });
+          return {
+            level: plunder,
+            value: value,
+          };
+        });
       } else {
         // Drown the player if they didn't make it back to the submarine
         player.drownedLastRound = true;
@@ -950,7 +1001,35 @@ class Game extends React.Component {
   }
 
   endGame() {
+    // Calculate the scoreboard
+    const gameEndScore = [];
+    let length = 0;
 
+    for (const player of this.state.players) {
+      if (player.money in gameEndScore) {
+        gameEndScore[player.money].push(player.name);
+      } else {
+        gameEndScore[player.money] = [player.name];
+        length++;
+      }
+    }
+
+    // Unsparse the array for better rendering
+    let index = 0;
+    let scoring = []
+    gameEndScore.forEach((players, score) => {
+      index++;
+
+      scoring[length - index] = {
+        players: players,
+        money: score
+      };
+    })
+
+    this.setState({
+      gameState: "gameOver",
+      gameEndScore: scoring,
+    });
   }
 
   getNextPlayerId(currentPlayerId) {
@@ -973,4 +1052,4 @@ class Game extends React.Component {
   }
 }
 
-ReactDOM.render(<Game />, document.getElementById("root"));
+ReactDOM.render(<Game/>, document.getElementById("root"));

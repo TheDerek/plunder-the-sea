@@ -263,7 +263,7 @@ header {
     border-left: none;
 }
 
-ul {
+ul,ol {
   margin: 1em 0;
   padding-left: 40px;
 }
