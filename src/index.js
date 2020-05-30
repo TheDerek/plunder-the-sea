@@ -337,7 +337,7 @@ class GameControl extends React.Component {
     });
 
     let button;
-    if (this.props.round.current < this.props.round.max) {
+    if (this.props.round.current <= this.props.round.max) {
       button = (
         <button onClick={this.props.startGameCallBack}>Next round</button>
       );
