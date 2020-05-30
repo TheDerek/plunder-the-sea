@@ -515,6 +515,12 @@ class Game extends React.Component {
     } else {
       this.state = this.getStartGameState();
     }
+
+    // Connect to the server
+    this.client = new WebSocket('ws://localhost:3030');
+    this.client.onopen = () => {
+      console.log('Now connected');
+    };
   }
 
   getStartGameState() {
