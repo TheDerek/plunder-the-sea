@@ -4,6 +4,7 @@ import crypto from "crypto"
 class Game {
   constructor(admin) {
     this.id = crypto.randomBytes(3).toString("hex")
+    this.admin = admin;
   }
 }
 
@@ -27,8 +28,7 @@ server.on("connection", (client) => {
     switch(data.action) {
       case "newGame":
         return newGame(client);
-        break;
-    };
+    }
   });
 });
 
