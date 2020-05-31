@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/plunder-the-sea/precache-manifest.e1fd8dd6c2d94d5bd85795666c630275.js"
+  "/plunder-the-sea/precache-manifest.a05681a24414eb130fdf50a61b50fa69.js"
 );
 
 self.addEventListener('message', (event) => {

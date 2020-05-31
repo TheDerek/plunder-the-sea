@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "f245c051efc13d0c58cbf363c3effdcb",
+    "revision": "6496b9cb45ab2238f1d4cea6d2d544ba",
     "url": "/plunder-the-sea/index.html"
   },
   {
-    "revision": "7c1c98f52912b2c8b844",
+    "revision": "49b932c3f189bf6c2a8a",
     "url": "/plunder-the-sea/static/css/main.6954a39c.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/plunder-the-sea/static/js/2.fef47e48.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "7c1c98f52912b2c8b844",
-    "url": "/plunder-the-sea/static/js/main.8e5c5a46.chunk.js"
+    "revision": "49b932c3f189bf6c2a8a",
+    "url": "/plunder-the-sea/static/js/main.abee97aa.chunk.js"
   },
   {
     "revision": "5c96876de8612a02fae9",
