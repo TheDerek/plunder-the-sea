@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/plunder-the-sea/static/css/main.6954a39c.chunk.css",
+    "main.js": "/plunder-the-sea/static/js/main.8e5c5a46.chunk.js",
+    "main.js.map": "/plunder-the-sea/static/js/main.8e5c5a46.chunk.js.map",
+    "runtime-main.js": "/plunder-the-sea/static/js/runtime-main.dd8bddce.js",
+    "runtime-main.js.map": "/plunder-the-sea/static/js/runtime-main.dd8bddce.js.map",
+    "static/js/2.fef47e48.chunk.js": "/plunder-the-sea/static/js/2.fef47e48.chunk.js",
+    "static/js/2.fef47e48.chunk.js.map": "/plunder-the-sea/static/js/2.fef47e48.chunk.js.map",
+    "index.html": "/plunder-the-sea/index.html",
+    "precache-manifest.e1fd8dd6c2d94d5bd85795666c630275.js": "/plunder-the-sea/precache-manifest.e1fd8dd6c2d94d5bd85795666c630275.js",
+    "service-worker.js": "/plunder-the-sea/service-worker.js",
+    "static/css/main.6954a39c.chunk.css.map": "/plunder-the-sea/static/css/main.6954a39c.chunk.css.map",
+    "static/js/2.fef47e48.chunk.js.LICENSE.txt": "/plunder-the-sea/static/js/2.fef47e48.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.dd8bddce.js",
+    "static/js/2.fef47e48.chunk.js",
+    "static/css/main.6954a39c.chunk.css",
+    "static/js/main.8e5c5a46.chunk.js"
+  ]
+}
