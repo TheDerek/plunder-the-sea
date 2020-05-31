@@ -616,13 +616,14 @@ class Game extends React.Component {
     return (
       <div>
         <header>
-          <h1>Deep Sea Adventure</h1>
+          <h1>Plunder the Sea</h1>
           <p>
-            Unofficial web implementation by{" "}
+            Web implementation by{" "}
             <a href="https://github.com/TheDerek">TheDerek</a>
           </p>
           <p>
-            Original game by <a href="https://oinkgames.com">Oink Games</a>
+            Inspired by <a href="https://boardgamegeek.com/boardgame/169654/deep-sea-adventure">Deep Sea Adventure</a>.
+            Find the rules <a target="_blank" href={process.env.PUBLIC_URL + "/rules.pdf"}>here</a>.
           </p>
           <p>
             Best played with friends in the same room or via your favourite
